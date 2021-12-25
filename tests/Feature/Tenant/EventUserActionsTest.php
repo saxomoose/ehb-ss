@@ -5,11 +5,10 @@ namespace Tests\Feature\Tenant;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Tests\TenantTestCase;
 
-class EventUserActionTest extends TenantTestCase
+class EventUserActionsTest extends TenantTestCase
 {
     public function getAbilities()
     {

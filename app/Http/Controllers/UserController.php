@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -70,6 +71,15 @@ class UserController extends Controller
 
         $user->fill($diff->toArray());
         $user->save();
+
+        // If user email is updated, new register process is initiated.
+        if ($diff->has('email')) {
+            foreach ($user->roles as $role) {
+                $role->tokens()->delete();
+            }
+            $user->tokens()->delete();
+            event(new Registered($user));
+        }
 
         return (new UserResource($user))
             ->response()

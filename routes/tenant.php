@@ -70,7 +70,7 @@ Route::prefix(
     'auth:sanctum'
 ])->group(function () {
     // This route is used to sync the user's role tokens between the server and the client.
-    Route::post('token/sync', [EventUserTokenController::class, 'sync']);
+    // Route::post('token/sync', [EventUserTokenController::class, 'sync']);
 
     // This route is used to seed a new user in the database with abilities manager or seller.
     Route::post('users', [UserController::class, 'seed'])->middleware('ability:admin,manager');
@@ -106,7 +106,7 @@ Route::prefix(
     'auth:sanctum',
 ])->group(function () {
     // This route should be visited prior to a sync with all the role tokens possessed by the client. 
-    Route::post('token/purge', [EventUserTokenController::class, 'purge']);
+    // Route::post('token/purge', [EventUserTokenController::class, 'purge']);
 
     // This route is used to access the event users.
     Route::get('events/{event}/users', [EventController::class, 'users'])->middleware(['ability:admin,manager', 'member']);

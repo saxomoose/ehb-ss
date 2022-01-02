@@ -63,19 +63,17 @@ class LoginController extends Controller
         if ($user->is_active && $user->tokens->isEmpty()) {
             switch ($user->ability) {
                 case 'admin':
-                    $userToken = $user->createToken($validatedAttributes['device_name'], ['admin']);
+                    $token = $user->createToken($validatedAttributes['device_name'], []);
                     break;
                 case 'manager':
-                    $userToken = $user->createToken($validatedAttributes['device_name'], ['manager']);
+                    $token = $user->createToken($validatedAttributes['device_name'], []);
                     break;
                 case 'seller':
-                    $userToken = $user->createToken($validatedAttributes['device_name'], ['seller']);
+                    $token = $user->createToken($validatedAttributes['device_name'], []);
                     break;
             }
 
-            $token = new Token('user_token', $user->id, $userToken->plainTextToken);
-
-            return response()->json(['data' => $token], Response::HTTP_OK);
+            return response()->json(['data' => $token->plainTextToken], Response::HTTP_OK);
         } else {
             return response()->noContent(); // The user token is already set. Not an error code given that the login action is performed on every app startup.
         }

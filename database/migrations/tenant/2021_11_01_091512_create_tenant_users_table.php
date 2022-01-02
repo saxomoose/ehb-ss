@@ -26,8 +26,6 @@ class CreateTenantUsersTable extends Migration
             //$table->rememberToken();
             $table->integer('pin_code')->nullable();
             $table->timestamp('pin_code_timestamp')->nullable();
-            $table->foreignUuid('created_by');
-            $table->foreignUuid('updated_by');
             $table->timestamps();
         });
     }

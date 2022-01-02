@@ -37,8 +37,6 @@ class TenantDatabaseSeeder extends Seeder
             'id' => (string) Str::uuid(),
             'email' => $adminEmail,
             'ability' => 'admin',
-            'created_by' => $centralAdmin->id,
-            'updated_by' => $centralAdmin->id
         ]);
 
         // Everything hereunder to be commented out in production.

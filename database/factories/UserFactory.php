@@ -22,8 +22,6 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        $userId = User::firstWhere('ability', '=', 'admin');
-
         return [
             'id' => $this->faker->uuid(),
             //'name' => $this->faker->name(),
@@ -33,8 +31,6 @@ class UserFactory extends Factory
             //'remember_token' => Str::random(10),
             //'pin_code' => random_int(10 ** (6 - 1), (10 ** 6) - 1),
             //'pin_code_timestamp' => now()
-            'created_by' => $userId,
-            'updated_by' => $userId
         ];
     }
 

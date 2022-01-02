@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Traits\Accountable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +11,7 @@ use Laravel\Sanctum\NewAccessToken;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, Accountable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     // Required because primary key is uuid.
     public $incrementing = false;

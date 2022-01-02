@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Traits\Accountable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    use HasFactory, Accountable;
+    use HasFactory;
 
     // Required because primary key is uuid.
     //public $incrementing = false;

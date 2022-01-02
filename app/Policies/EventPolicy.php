@@ -18,7 +18,7 @@ class EventPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->ability === 'manager';
     }
 
     /**

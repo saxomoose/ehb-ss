@@ -74,9 +74,6 @@ class UserController extends Controller
 
         // If user email is updated, new register process is initiated.
         if ($diff->has('email')) {
-            foreach ($user->roles as $role) {
-                $role->tokens()->delete();
-            }
             $user->tokens()->delete();
             event(new Registered($user));
         }
@@ -99,7 +96,7 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    // Seeds the email of a user in the db. The email existence is tested during registration.
+    // Seeds the email of a user in the db. The email existence is tested during registration. Admin is able to seed admin, manager, ''. manager is only able to seed ''.
     public function seed(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -135,9 +132,6 @@ class UserController extends Controller
             $user->is_active = false;
             $user->pin_code = -1;
             $user->save();
-            foreach ($user->roles as $role) {
-                $role->tokens()->delete();
-            }
             $user->tokens()->delete();
 
             return response()->noContent();

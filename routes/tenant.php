@@ -55,12 +55,12 @@ Route::prefix(
 ])->group(function () {
     //Route::get('/token/refresh', [TokenController::class, 'refresh']);
     Route::get('users', [UserController::class, 'index'])->middleware('ability:admin,manager');
-    Route::get('users/{user}', [UserController::class, 'show'])->middleware(['ability:admin,manager,seller', 'accountable', 'own']);
-    Route::patch('users/{user}', [UserController::class, 'update'])->middleware(['ability:admin,manager,seller', 'accountable', 'own']);
+    Route::get('users/{user}', [UserController::class, 'show'])->middleware(['ability:admin,manager,seller', 'own']);
+    Route::patch('users/{user}', [UserController::class, 'update'])->middleware(['ability:admin,manager,seller', 'own']);
     Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware('ability:admin');
 });
 
-// Tenant API routes - auth - actions expecting user tokens.
+// Tenant API routes - auth
 Route::prefix(
     'api'
 )->middleware([
@@ -76,37 +76,20 @@ Route::prefix(
     Route::post('users', [UserController::class, 'seed'])->middleware('ability:admin,manager');
     // This route is to activate or deactivate a user. The user's tokens are revoked upon deactivation.
     Route::post('users/{user}', [UserController::class, 'toggleIsActive'])->middleware('ability:admin,manager');
+    // This route is used to access the user events.
+    Route::get('users/{user}/events', [UserController::class, 'events'])->middleware(['ability:admin,manager,seller', 'own']);
 
-    Route::get('events', [EventController::class, 'index'])->middleware('ability:admin,manager');
+    Route::get('events', [EventController::class, 'index'])->middleware('can:viewAny');
     Route::post('events', [EventController::class, 'store'])->middleware('ability:admin,manager');
-    Route::get('events/{event}', [EventController::class, 'show'])->middleware(['ability:admin,manager', 'accountable']);
-    Route::patch('events/{event}', [EventController::class, 'update'])->middleware(['ability:admin,manager', 'accountable']);
+    Route::get('events/{event}', [EventController::class, 'show'])->middleware(['ability:admin,manager']);
+    Route::patch('events/{event}', [EventController::class, 'update'])->middleware(['ability:admin,manager']);
     Route::delete('events/{event}', [EventController::class, 'destroy'])->middleware('ability:admin');
 
     Route::get('bankaccounts', [BankAccountController::class, 'index'])->middleware('ability:admin,manager');
     Route::post('bankaccounts', [BankAccountController::class, 'store'])->middleware('ability:admin,manager');
-    Route::get('bankaccounts/{bankAccount}', [BankAccountController::class, 'show'])->middleware(['ability:admin,manager', 'accountable']);
-    Route::patch('bankaccounts/{bankAccount}', [BankAccountController::class, 'update'])->middleware(['ability:admin,manager', 'accountable']);
-    Route::delete('bankaccounts/{bankAccount}', [BankAccountController::class, 'destroy'])->middleware('ability:admin');
-
-    // This route is used to access the user events. Attaching, updating and detaching are subject to role token authentication.
-    Route::get('users/{user}/events', [UserController::class, 'events'])->middleware(['ability:admin,manager,seller', 'own']);
-
-    // This route is used to access the user transactions.
-    // Route::get('users/{user}/transactions', [UserController::class, 'transactions'])->middleware('ability:admin,manager,seller');
-});
-
-// Tenant API routes - auth - actions expecting role tokens.
-Route::prefix(
-    'api'
-)->middleware([
-    InitializeTenancyByDomain::class,
-    PreventAccessFromCentralDomains::class,
-    'api',
-    'auth:sanctum',
-])->group(function () {
-    // This route should be visited prior to a sync with all the role tokens possessed by the client. 
-    // Route::post('token/purge', [EventUserTokenController::class, 'purge']);
+    Route::get('events/{event}/bankaccount', [BankAccountController::class, 'show'])->middleware(['ability:admin,manager']);
+    Route::patch('events/{event}/bankaccount', [BankAccountController::class, 'update'])->middleware(['ability:admin,manager']);
+    Route::delete('events/{event}/bankaccount', [BankAccountController::class, 'destroy'])->middleware('ability:admin');
 
     // This route is used to access the event users.
     Route::get('events/{event}/users', [EventController::class, 'users'])->middleware(['ability:admin,manager', 'member']);
@@ -151,7 +134,14 @@ Route::prefix(
 
     // This route is used to modify the status of a transaction.
     Route::post('transactions/{transaction}', [TransactionController::class, 'toggleStatus'])->middleware(['ability:admin,manager', 'member']);
+
+    // This route is used to access the user transactions.
+    // Route::get('users/{user}/transactions', [UserController::class, 'transactions'])->middleware('ability:admin,manager,seller');
+
+    // This route should be visited prior to a sync with all the role tokens possessed by the client. 
+    // Route::post('token/purge', [EventUserTokenController::class, 'purge']);
 });
+
 
 Route::fallback(function () {
     return response()->json(['message' => 'This route does not exist.'], Response::HTTP_NOT_FOUND);

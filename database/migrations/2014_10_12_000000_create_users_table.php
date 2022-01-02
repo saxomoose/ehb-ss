@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
             //$table->timestamp('email_verified_at')->nullable();
             $table->string('password')->default('placeholder');
             $table->boolean('is_active')->default(false);
-            $table->enum('ability', ['admin', 'manager', 'seller'])->default('seller');
+            $table->enum('ability', ['admin', 'manager', ''])->default('');
             //$table->rememberToken();
             $table->integer('pin_code')->nullable();
             $table->timestamp('pin_code_timestamp')->nullable();

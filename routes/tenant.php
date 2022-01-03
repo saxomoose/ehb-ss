@@ -13,7 +13,9 @@ use App\Http\Controllers\PINCodeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Models\Category;
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -55,10 +57,10 @@ Route::prefix(
     'auth:sanctum',
 ])->group(function () {
     //Route::get('/token/refresh', [TokenController::class, 'refresh']);
-    Route::get('users', [UserController::class, 'index'])->middleware('ability:admin,manager');
-    Route::get('users/{user}', [UserController::class, 'show'])->middleware(['ability:admin,manager,seller', 'own']);
-    Route::patch('users/{user}', [UserController::class, 'update'])->middleware(['ability:admin,manager,seller', 'own']);
-    Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware('ability:admin');
+    Route::get('users', [UserController::class, 'index'])->can('viewAny', User::class);
+    Route::get('users/{user}', [UserController::class, 'show'])->can('view', 'user');
+    Route::patch('users/{user}', [UserController::class, 'update'])->can('update', 'user');
+    Route::delete('users/{user}', [UserController::class, 'destroy'])->can('delete', 'user');
 });
 
 // Tenant API routes - auth
@@ -74,17 +76,17 @@ Route::prefix(
     // Route::post('token/sync', [EventUserTokenController::class, 'sync']);
 
     // This route is used by admin to seed a new privileged/unprivileged user in the database.
-    Route::post('users', [UserController::class, 'seed'])->middleware('ability:admin,manager');
+    Route::post('users', [UserController::class, 'seed'])->can('create', User::class);
     // This route is to activate or deactivate a user. The user's token isj revoked upon deactivation.
     Route::post('users/{user}', [UserController::class, 'toggleIsActive'])->middleware('ability:admin,manager');
     // This route is used to access the user events.
     Route::get('users/{user}/events', [UserController::class, 'events'])->middleware(['ability:admin,manager,seller', 'own']);
 
     Route::get('events', [EventController::class, 'index'])->can('viewAny', Event::class);
-    Route::post('events', [EventController::class, 'store'])->middleware('ability:admin,manager');
+    Route::post('events', [EventController::class, 'store'])->can('create', Event::class);
     Route::get('events/{event}', [EventController::class, 'show'])->can('view', 'event');
-    Route::patch('events/{event}', [EventController::class, 'update'])->middleware(['ability:admin,manager']);
-    Route::delete('events/{event}', [EventController::class, 'destroy'])->middleware('ability:admin');
+    Route::patch('events/{event}', [EventController::class, 'update'])->can('update', 'event');
+    Route::delete('events/{event}', [EventController::class, 'destroy'])->can('delete', 'event');
 
     Route::get('bankaccounts', [BankAccountController::class, 'index'])->middleware('ability:admin,manager');
     Route::post('bankaccounts', [BankAccountController::class, 'store'])->middleware('ability:admin,manager');
@@ -105,11 +107,11 @@ Route::prefix(
     // This route is used to access the event categories.
     Route::get('events/{event}/categories', [EventController::class, 'categories'])->middleware(['ability:admin,manager', 'member']);
 
-    Route::get('categories', [CategoryController::class, 'index'])->middleware(['ability:admin,manager', 'member']);
-    Route::post('events/{event}/categories', [CategoryController::class, 'store'])->middleware(['ability:admin,manager', 'member']);
-    Route::get('categories/{category}', [CategoryController::class, 'show'])->middleware(['ability:admin,manager', 'member']);
-    Route::patch('categories/{category}', [CategoryController::class, 'update'])->middleware(['ability:admin,manager', 'member']);
-    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->middleware('ability:admin');
+    Route::get('categories', [CategoryController::class, 'index'])->middleware('viewAny', Category::class);
+    Route::post('events/{event}/categories', [CategoryController::class, 'store'])->can('create', Category::class);
+    Route::get('categories/{category}', [CategoryController::class, 'show'])->can('view', 'category');
+    Route::patch('categories/{category}', [CategoryController::class, 'update'])->can('update', 'category');
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->can('delete', 'category');
 
     // This route is used to access the category items.
     Route::get('categories/{category}/items', [CategoryController::class, 'items'])->middleware(['ability:admin,manager', 'member']);

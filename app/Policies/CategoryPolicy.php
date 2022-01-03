@@ -3,12 +3,21 @@
 namespace App\Policies;
 
 use App\Models\Category;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class CategoryPolicy
 {
     use HandlesAuthorization;
+
+    public function before(User $user)
+    {
+        if ($user->ability == 'admin') {
+            return true;
+        }
+    }
 
     /**
      * Determine whether the user can view any models.
@@ -30,7 +39,17 @@ class CategoryPolicy
      */
     public function view(User $user, Category $category)
     {
-        //
+        // $eventId = $category->event_id;
+        // $isMember = $user->getRole($eventId);
+
+        // return isset($isMember) && $user->ability == 'manager'
+        //     ? Response::allow()
+        //     : Response::deny('The user does not belong to this event.');
+        $event = Event::findOrFail($category->event_id);
+
+        return $event->isManager($user->id)
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     /**
@@ -39,9 +58,11 @@ class CategoryPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user, Event $event)
     {
-        //
+        return $event->isManager($user->id)
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     /**
@@ -53,7 +74,11 @@ class CategoryPolicy
      */
     public function update(User $user, Category $category)
     {
-        //
+        $event = Event::findOrFail($category->event_id);
+
+        return $event->isManager($user->id)
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     /**

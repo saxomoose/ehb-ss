@@ -51,8 +51,7 @@ class User extends Authenticatable
     public function events()
     {
         return $this->belongsToMany(Event::class)
-            ->using(EventUser::class)
-            ->withPivot('ability');
+            ->using(EventUser::class);
     }
 
     /**
@@ -73,5 +72,11 @@ class User extends Authenticatable
     public function getRole($eventId)
     {
         return $this->roles->where('event_id', '=', $eventId)->first();
+    }
+
+    // Determines whether user belongs to an event.
+    public function isMember($eventId)
+    {
+        return $this->events->pluck('id')->contains($eventId);
     }
 }

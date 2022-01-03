@@ -19,12 +19,12 @@ class EventActionsTest extends TenantTestCase
 {
     use WithFaker;
 
-    public function getAbilities()
+    public function getTopLevelAbilities()
     {
         return [
             'admin' => ['admin'],
-            'manager' => ['manager'],
-            'seller' => ['seller']
+            'coordinator' => ['coordinator'],
+            '' => ['']
         ];
     }
 
@@ -48,7 +48,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function getEvents_WhenAdminOrManager_Returns200($ability)
     {
@@ -77,7 +77,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function postEvent_WithValidInput_Returns201($ability)
     {
@@ -144,7 +144,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function getEvent_WhenAdminOrManager_Returns200($ability)
     {
@@ -218,7 +218,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function deleteEvent_WhenAdmin_Returns204($ability)
     {

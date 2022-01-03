@@ -9,7 +9,7 @@ use Tests\TenantTestCase;
 
 class UserActionsTest extends TenantTestCase
 {
-    public function getAbilities()
+    public function getTopLevelAbilities()
     {
         return [
             'admin' => ['admin'],
@@ -21,7 +21,7 @@ class UserActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\UserController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function getUsers_WhenAdminOrWrite_Returns200($ability)
     {

@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Event;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
-class EventPolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -19,7 +19,7 @@ class EventPolicy
 
     /**
      * Determine whether the user can view any models.
-     * 
+     *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
@@ -32,12 +32,18 @@ class EventPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Event $event)
+    public function view(User $user, User $model)
     {
-        return $user->ability == 'coordinator';
+        if ($user->ability == '') {
+            return $user->id == $model->id
+                ? Response::allow()
+                : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else {
+            return $user->ability == 'coordinator';
+        }
     }
 
     /**
@@ -55,22 +61,28 @@ class EventPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Event $event)
+    public function update(User $user, User $model)
     {
-        return $user->ability == 'coordinator';
+        if ($user->ability == '') {
+            return $user->id == $model->id
+                ? Response::allow()
+                : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else {
+            return $user->ability == 'coordinator';
+        }
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Event $event)
+    public function delete(User $user, User $model)
     {
         //
     }
@@ -79,10 +91,10 @@ class EventPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Event $event)
+    public function restore(User $user, User $model)
     {
         //
     }
@@ -91,10 +103,10 @@ class EventPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Event $event)
+    public function forceDelete(User $user, User $model)
     {
         //
     }

@@ -10,7 +10,7 @@ use Tests\TenantTestCase;
 
 class EventUserActionsTest extends TenantTestCase
 {
-    public function getAbilities()
+    public function getTopLevelAbilities()
     {
         return [
             'admin' => ['admin'],
@@ -22,7 +22,7 @@ class EventUserActionsTest extends TenantTestCase
     /**
      * Test with manager ability.
      * @test
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function upsert_WithValidInput_Returns201($ability)
     {

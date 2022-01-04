@@ -6,12 +6,15 @@ use App\Models\Category;
 use App\Models\Event;
 use App\Models\User;
 use DB;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
 use Tests\TenantTestCase;
 
 class DummyTest extends TenantTestCase
 {
+    use WithFaker;
+
     /**
      * @test
      */
@@ -43,30 +46,19 @@ class DummyTest extends TenantTestCase
     /**
      * @test
      */
-    public function getCategory()
+    public function seed_()
     {
-        $category = Category::firstWhere('event_id', '1');
-        $resultSet = DB::table('event_user')->where('event_id', '2')->where('ability', 'seller')->select('user_id')->get();
-        $userId = $resultSet->first()->user_id;
-
         Sanctum::actingAs(
-            User::findOrFail($userId),
+            User::factory()->makeOne(['ability' => 'coordinator']),
             []
         );
 
-        $response = $this->json('GET', "{$this->domainWithScheme}/api/categories/{$category->id}");
-    }
 
-    /**
-     * @test
-     */
-    public function postCategory()
-    {
-        // Sanctum::actingAs(
-        //     User::factory(),
-        //     []
-        // );
-
-        // $response = $this->json('GET', "{$this->domainWithScheme}/api/categories/{$category->id}");
+        $response = $this->postJson("{$this->domainWithScheme}/api/users", [
+            'data' => [
+                'email' => $this->faker->email(),
+                'ability' => 'coordinator'
+            ]
+        ]);
     }
 }

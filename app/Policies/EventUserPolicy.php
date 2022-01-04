@@ -2,13 +2,13 @@
 
 namespace App\Policies;
 
-use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventUser;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 
-class CategoryPolicy
+class EventUserPolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +20,6 @@ class CategoryPolicy
     }
 
     /**
-     * Reserved to admin and coordinators given that method is not scoped to an event.
      * Determine whether the user can view any models.
      *
      * @param  \App\Models\User  $user
@@ -28,26 +27,23 @@ class CategoryPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'coordinator';
+        //
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\EventUser  $eventUser
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Category $category)
+    public function view(User $user, EventUser $eventUser)
     {
-        // $eventId = $category->event_id;
-        // $isMember = $user->getRole($eventId);
+        //
+    }
 
-        // return isset($isMember) && $user->ability == 'manager'
-        //     ? Response::allow()
-        //     : Response::deny('The user does not belong to this event.');
-        $event = Event::findOrFail($category->event_id);
-
+    public function upsert(User $user, Event $event)
+    {
         return $event->isManager($user->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
@@ -59,49 +55,45 @@ class CategoryPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user, Event $event)
+    public function create(User $user)
     {
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+        //
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\EventUser  $eventUser
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Category $category)
+    public function update(User $user, EventUser $eventUser)
     {
-        $event = Event::findOrFail($category->event_id);
-
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+        //
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\EventUser  $eventUser
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Category $category)
+    public function delete(User $user, Event $event)
     {
-        //
+        return $event->isManager($user->id)
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\EventUser  $eventUser
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Category $category)
+    public function restore(User $user, EventUser $eventUser)
     {
         //
     }
@@ -110,20 +102,26 @@ class CategoryPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\EventUser  $eventUser
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Category $category)
+    public function forceDelete(User $user, EventUser $eventUser)
     {
         //
     }
 
-    public function viewItems(User $user, Category $category)
+    public function viewTransactions(User $user, Event $event, User $model)
     {
-        $event = Event::findOrFail($category->event_id);
+        $role = $user->getRole($event->id);
 
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+        if (!isset($role)) {
+            $this->deny('The user does not belong to this event.');
+        } else if ($role == 'seller') {
+            return $user->id == $model->id
+                ? Response::allow()
+                : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else if ($role == 'manager') {
+            $this->allow();
+        }
     }
 }

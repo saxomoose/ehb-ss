@@ -44,7 +44,7 @@ class TenantDatabaseSeeder extends Seeder
 
         $events = Event::factory(2)
             ->for($bankAccount)
-            ->has(User::factory()->count(1))
+            ->hasAttached(User::factory()->count(1))
             ->create();
 
         $categories = collect();

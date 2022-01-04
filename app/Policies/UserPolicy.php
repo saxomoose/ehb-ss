@@ -110,4 +110,33 @@ class UserPolicy
     {
         //
     }
+
+    public function seed(User $user)
+    {
+        if ($user->ability == 'coordinator') {
+            return request()->input('data.ability') == ''
+                ? Response::allow()
+                : Response::deny('The user is only authorized to seed unprivileged users.');
+        }
+    }
+
+    public function toggleIsActive(User $user, User $model)
+    {
+        if ($model->ability == 'admin') {
+            $this->deny("The admin user cannot be deactivated.");
+        } else {
+            return $user->ability == 'coordinator';
+        }
+    }
+
+    public function viewEvents(User $user, User $model)
+    {
+        if ($user->ability == '') {
+            return $user->id == $model->id
+                ? Response::allow()
+                : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else {
+            return $user->ability == 'coordinator';
+        }
+    }
 }

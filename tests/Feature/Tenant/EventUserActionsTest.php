@@ -10,50 +10,55 @@ use Tests\TenantTestCase;
 
 class EventUserActionsTest extends TenantTestCase
 {
-    public function getTopLevelAbilities()
+    public function getRoles()
     {
         return [
-            'admin' => ['admin'],
-            'manager' => ['manager'],
-            'seller' => ['seller']
+            'admin' => ['admin', ''],
+            'coordinator' => ['coordinator', ''],
+            'manager' => ['', 'manager'],
+            'seller' => ['', 'seller']
         ];
     }
 
     /**
-     * Test with manager ability.
      * @test
-     * @dataProvider getTopLevelAbilities
+     * @dataProvider getRoles
      */
-    public function upsert_WithValidInput_Returns201($ability)
+    public function upsert_WithValidInput_Returns201($ability, $role)
     {
+        DB::beginTransaction();
+
+        $user = User::factory()->createOne(['ability' => $ability]);
         Sanctum::actingAs(
-            User::factory()->makeOne(),
-            ["{$ability}"]
+            $user,
+            []
         );
 
         $event = Event::inRandomOrder()->first();
-        $user = User::inRandomOrder()->first();
+        if ($role == 'manager' || $role == 'seller') {
+            $event->users()->attach($user, ['ability' => "{$role}"]);
+        }
+        $userModel = User::factory()->createOne();
 
-        DB::beginTransaction();
-        $response = $this->putJson("{$this->domainWithScheme}/api/events/{$event->id}/users/{$user->id}", [
+        $response = $this->putJson("{$this->domainWithScheme}/api/events/{$event->id}/users/{$userModel->id}", [
             'data' => [
-                'ability' => 'manager'
+                'ability' => 'seller'
             ]
         ]);
 
-        if ($ability == 'admin' || $ability == 'manager') {
+        if ($ability == 'admin' || $role == 'manager') {
             $response->assertCreated();
             $this->assertDatabaseHas('event_user', [
                 'event_id' => $event->id,
                 'user_id' => $user->id,
-                'ability' => 'manager'
+                'ability' => 'seller'
             ]);
-        } else if ($ability == 'seller') {
+        } else if ($ability == 'coordinator' || $role == 'seller') {
             $response->assertForbidden();
             $this->assertDatabaseMissing('event_user', [
                 'event_id' => $event->id,
                 'user_id' => $user->id,
-                'ability' => 'manager'
+                'ability' => 'seller'
             ]);
         }
 

@@ -96,13 +96,13 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    // Seeds the email of a user in the db. The email existence is tested during registration. Admin is able to seed admin, manager, ''. manager is only able to seed ''.
+    // Seeds the email of a user in the db. The email existence is tested during registration. Admin is able to seed coordinator, ''. coordinator is only able to seed ''.
     public function seed(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'data' => 'required|array:email,ability',
             'data.email' => ['required', 'email', Rule::unique('users', 'email'), 'max:255'],
-            'data.ability' => ['required', Rule::in(['manager', 'seller'])]
+            'data.ability' => ['required', Rule::in(['coordinator', ''])]
         ]);
 
         if ($validator->fails()) {
@@ -128,7 +128,7 @@ class UserController extends Controller
     public function toggleIsActive(User $user)
     {
         // Only managers and sellers can be deactivated.
-        if ($user->is_active && $user->ability != 'admin') {
+        if ($user->is_active) {
             $user->is_active = false;
             $user->pin_code = -1;
             $user->save();

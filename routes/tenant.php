@@ -13,8 +13,12 @@ use App\Http\Controllers\PINCodeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Models\BankAccount;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventUser;
+use App\Models\Item;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
@@ -75,12 +79,11 @@ Route::prefix(
     // This route is used to sync the user's role tokens between the server and the client.
     // Route::post('token/sync', [EventUserTokenController::class, 'sync']);
 
-    // This route is used by admin to seed a new privileged/unprivileged user in the database.
-    Route::post('users', [UserController::class, 'seed'])->can('create', User::class);
-    // This route is to activate or deactivate a user. The user's token isj revoked upon deactivation.
-    Route::post('users/{user}', [UserController::class, 'toggleIsActive'])->middleware('ability:admin,manager');
+    Route::post('users', [UserController::class, 'seed'])->can('seed', User::class);
+    // This route is to activate or deactivate a user. The user's token is revoked upon deactivation.
+    Route::put('users/{user}', [UserController::class, 'toggleIsActive'])->can('toggleIsActive', 'user');
     // This route is used to access the user events.
-    Route::get('users/{user}/events', [UserController::class, 'events'])->middleware(['ability:admin,manager,seller', 'own']);
+    Route::get('users/{user}/events', [UserController::class, 'events'])->can('viewEvents', 'user');
 
     Route::get('events', [EventController::class, 'index'])->can('viewAny', Event::class);
     Route::post('events', [EventController::class, 'store'])->can('create', Event::class);
@@ -88,55 +91,55 @@ Route::prefix(
     Route::patch('events/{event}', [EventController::class, 'update'])->can('update', 'event');
     Route::delete('events/{event}', [EventController::class, 'destroy'])->can('delete', 'event');
 
-    Route::get('bankaccounts', [BankAccountController::class, 'index'])->middleware('ability:admin,manager');
-    Route::post('bankaccounts', [BankAccountController::class, 'store'])->middleware('ability:admin,manager');
-    Route::get('bankaccounts/{bankAccount}', [BankAccountController::class, 'show'])->middleware(['ability:admin,manager']);
-    Route::patch('bankaccounts/{bankAccount}', [BankAccountController::class, 'update'])->middleware(['ability:admin,manager']);
-    Route::delete('bankaccounts/{bankAccount}', [BankAccountController::class, 'destroy'])->middleware('ability:admin');
+    Route::get('bankaccounts', [BankAccountController::class, 'index'])->can('viewAny', BankAccount::class);
+    Route::post('bankaccounts', [BankAccountController::class, 'store'])->can('create', BankAccount::class);
+    Route::get('bankaccounts/{bankAccount}', [BankAccountController::class, 'show'])->can('view', 'event');
+    Route::patch('bankaccounts/{bankAccount}', [BankAccountController::class, 'update'])->can('update', 'event');
+    Route::delete('bankaccounts/{bankAccount}', [BankAccountController::class, 'destroy'])->can('delete', 'event');
 
     // This route is used to access the event users.
-    Route::get('events/{event}/users', [EventController::class, 'users'])->middleware(['ability:admin,manager', 'member']);
+    Route::get('events/{event}/users', [EventController::class, 'users'])->can('viewUsers', 'event');
 
     // There routes are used to upsert and delete roles on the pivot table.
-    Route::put('events/{event}/users/{user}', [EventUserController::class, 'upsert'])->middleware(['ability:admin,manager', 'member']);
-    Route::delete('events/{event}/users/{user}', [EventUserController::class, 'destroy'])->middleware(['ability:admin,manager', 'member']); // Detach is within scope of manager.
+    Route::put('events/{event}/users/{user}', [EventUserController::class, 'upsert'])->can('upsert', [EventUser::class, 'event']);
+    Route::delete('events/{event}/users/{user}', [EventUserController::class, 'destroy'])->can('delete', [EventUser::class, 'event']); // Detach is within scope of manager.
 
     // This route is used to access the user transactions executed during an event.
-    Route::get('events/{event}/users/{user}/transactions', [EventUserController::class, 'transactions'])->middleware(['ability:admin,manager,seller', 'member', 'own']);
+    Route::get('events/{event}/users/{user}/transactions', [EventUserController::class, 'transactions'])->can('viewTransactions', [EventUser::class, 'event', 'user']);
 
     // This route is used to access the event categories.
-    Route::get('events/{event}/categories', [EventController::class, 'categories'])->middleware(['ability:admin,manager', 'member']);
+    Route::get('events/{event}/categories', [EventController::class, 'categories'])->can('viewCategories', 'event');
 
-    Route::get('categories', [CategoryController::class, 'index'])->middleware('viewAny', Category::class);
-    Route::post('events/{event}/categories', [CategoryController::class, 'store'])->can('create', Category::class);
+    Route::get('categories', [CategoryController::class, 'index'])->can('viewAny', Category::class);
+    Route::post('events/{event}/categories', [CategoryController::class, 'store'])->can('create', [Category::class, 'event']);
     Route::get('categories/{category}', [CategoryController::class, 'show'])->can('view', 'category');
     Route::patch('categories/{category}', [CategoryController::class, 'update'])->can('update', 'category');
     Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->can('delete', 'category');
 
     // This route is used to access the category items.
-    Route::get('categories/{category}/items', [CategoryController::class, 'items'])->middleware(['ability:admin,manager', 'member']);
+    Route::get('categories/{category}/items', [CategoryController::class, 'items'])->can('viewItems', 'category');
 
-    Route::get('items', [ItemController::class, 'index'])->middleware(['ability:admin,manager', 'member']);
-    Route::post('categories/{category}/items', [ItemController::class, 'store'])->middleware(['ability:admin,manager', 'member']);
-    Route::get('items/{item}', [ItemController::class, 'show'])->middleware(['ability:admin,manager', 'member']);
-    Route::patch('items/{item}', [ItemController::class, 'update'])->middleware(['ability:admin,manager', 'member']);
-    Route::delete('items/{item}', [ItemController::class, 'destroy'])->middleware('ability:admin');
+    Route::get('items', [ItemController::class, 'index'])->can('viewAny', Item::class);
+    Route::post('categories/{category}/items', [ItemController::class, 'store'])->can('create', [Item::class, 'category']);
+    Route::get('items/{item}', [ItemController::class, 'show'])->can('view', 'item');
+    Route::patch('items/{item}', [ItemController::class, 'update'])->can('update', 'item');
+    Route::delete('items/{item}', [ItemController::class, 'destroy'])->can('delete', 'item');
 
     // This route is used to access the event transactions.
-    Route::get('events/{event}/transactions', [EventController::class, 'transactions'])->middleware(['ability:admin,manager', 'member']);
+    Route::get('events/{event}/transactions', [EventController::class, 'transactions'])->can('viewTransactions', 'event');
     // This route is used to access the item transactions.
-    Route::get('items/{item}/transactions', [ItemController::class, 'transactions'])->middleware(['ability:admin,manager', 'member']);
+    // Route::get('items/{item}/transactions', [ItemController::class, 'transactions'])->can('viewTransactions', 'item'));
 
-    Route::get('transactions', [TransactionController::class, 'index'])->middleware(['ability:admin,manager', 'member']);
-    Route::post('events/{event}/transactions', [TransactionController::class, 'store'])->middleware(['ability:admin,manager,seller', 'member']); // This route also inserts the pivot table entries.
-    Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->middleware(['ability:admin,manager', 'member']);
-    Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->middleware('ability:admin');
+    Route::get('transactions', [TransactionController::class, 'index'])->can('viewAny', Transaction::class);
+    Route::post('events/{event}/transactions', [TransactionController::class, 'store'])->can('create', [Transaction::class, 'event']); // This route also inserts the pivot table entries.
+    Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->can('view', 'transaction');
+    Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->can('delete', 'transaction');
 
     // This route is used to access the transaction items.
-    Route::get('transactions/{transaction}/items', [TransactionController::class, 'items'])->middleware(['ability:admin,manager,seller', 'member', 'own']);
+    Route::get('transactions/{transaction}/items', [TransactionController::class, 'items'])->can('viewItems', 'transaction');
 
     // This route is used to modify the status of a transaction.
-    Route::post('transactions/{transaction}', [TransactionController::class, 'toggleStatus'])->middleware(['ability:admin,manager', 'member']);
+    Route::put('transactions/{transaction}', [TransactionController::class, 'toggleStatus'])->can('toggleStatus', 'transaction');
 
     // This route is used to access the user transactions.
     // Route::get('users/{user}/transactions', [UserController::class, 'transactions'])->middleware('ability:admin,manager,seller');

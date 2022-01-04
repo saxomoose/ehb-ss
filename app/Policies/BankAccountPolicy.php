@@ -2,12 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\Event;
+use App\Models\BankAccount;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
-class EventPolicy
+class BankAccountPolicy
 {
     use HandlesAuthorization;
 
@@ -20,7 +19,7 @@ class EventPolicy
 
     /**
      * Determine whether the user can view any models.
-     * 
+     *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
@@ -33,10 +32,10 @@ class EventPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\BankAccount  $bankAccount
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Event $event)
+    public function view(User $user, BankAccount $bankAccount)
     {
         return $user->ability == 'coordinator';
     }
@@ -56,10 +55,10 @@ class EventPolicy
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\BankAccount  $bankAccount
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Event $event)
+    public function update(User $user, BankAccount $bankAccount)
     {
         return $user->ability == 'coordinator';
     }
@@ -68,10 +67,10 @@ class EventPolicy
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\BankAccount  $bankAccount
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Event $event)
+    public function delete(User $user, BankAccount $bankAccount)
     {
         //
     }
@@ -80,10 +79,10 @@ class EventPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\BankAccount  $bankAccount
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Event $event)
+    public function restore(User $user, BankAccount $bankAccount)
     {
         //
     }
@@ -92,32 +91,11 @@ class EventPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
+     * @param  \App\Models\BankAccount  $bankAccount
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Event $event)
+    public function forceDelete(User $user, BankAccount $bankAccount)
     {
         //
-    }
-
-    public function viewCategories(User $user, Event $event)
-    {
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
-    }
-
-    public function viewTransactions(User $user, Event $event)
-    {
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
-    }
-
-    public function viewUsers(User $user, Event $event)
-    {
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
     }
 }

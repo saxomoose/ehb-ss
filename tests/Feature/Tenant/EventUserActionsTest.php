@@ -28,14 +28,21 @@ class EventUserActionsTest extends TenantTestCase
     {
         DB::beginTransaction();
 
-        $user = User::factory()->createOne(['ability' => $ability]);
-        Sanctum::actingAs(
-            $user,
-            []
-        );
-
         $event = Event::inRandomOrder()->first();
-        if ($role == 'manager' || $role == 'seller') {
+        $manager = $event->getManager();
+        $user = User::factory()->createOne(['ability' => $ability]);
+        if ($role == 'manager') {
+            Sanctum::actingAs(
+                $manager,
+                []
+            );
+        } else {
+            Sanctum::actingAs(
+                $user,
+                []
+            );
+        }
+        if ($role == 'seller') {
             $event->users()->attach($user, ['ability' => "{$role}"]);
         }
         $userModel = User::factory()->createOne();
@@ -50,14 +57,14 @@ class EventUserActionsTest extends TenantTestCase
             $response->assertCreated();
             $this->assertDatabaseHas('event_user', [
                 'event_id' => $event->id,
-                'user_id' => $user->id,
+                'user_id' => $userModel->id,
                 'ability' => 'seller'
             ]);
         } else if ($ability == 'coordinator' || $role == 'seller') {
             $response->assertForbidden();
             $this->assertDatabaseMissing('event_user', [
                 'event_id' => $event->id,
-                'user_id' => $user->id,
+                'user_id' => $userModel->id,
                 'ability' => 'seller'
             ]);
         }

@@ -46,10 +46,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if ($user->ability == 'admin') {
-            return response()->json(['error' => 'The admin user cannot be updated.'], Response::HTTP_NOT_IMPLEMENTED);
-        }
-
         $validator = Validator::make($request->all(), [
             'data' => 'required|array:name,email',
             'data.name' => 'required|max:255',

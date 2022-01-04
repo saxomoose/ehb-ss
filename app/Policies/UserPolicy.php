@@ -66,7 +66,10 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        if ($user->ability == '') {
+
+        if ($model->ability == 'admin') {
+            $this->deny('The admin user cannot be updated.');
+        } else if ($user->ability == '') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');

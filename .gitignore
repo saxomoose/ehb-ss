@@ -6,6 +6,7 @@ _ide_helper.php
 .env.testing
 .gcloudignore
 .phpunit.result.cache
+/.devcontainer
 /.idea
 /.vscode
 /docker

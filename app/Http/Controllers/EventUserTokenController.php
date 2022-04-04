@@ -46,8 +46,8 @@ class EventUserTokenController extends Controller
         if ($user->roles()->exists()) {
             $user->load('roles'); // Lazy eager loading.
             foreach ($user->roles as $role) {
-                $roleToken = $role->createToken($validatedAttributes['device_name'], ["{$role->ability}"]);
-                $token = new Token("role_token", $role->id, $roleToken->plainTextToken);
+                $roleToken = $role->createToken($validatedAttributes['device_name'], []);
+                $token = new Token("role_token", $role->event_id, $roleToken->plainTextToken); // Role tokens are identified client-side by event id.
                 array_push($tokens, $token);
             }
 

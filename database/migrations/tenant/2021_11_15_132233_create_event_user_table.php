@@ -18,7 +18,7 @@ class CreateEventUserTable extends Migration
             $table->foreignId('event_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->unique(['event_id', 'user_id']);
-            $table->enum('ability', ['admin', 'manager', 'seller'])->default('seller');
+            $table->enum('ability', ['manager', 'seller'])->default('seller');
             $table->timestamps();
         });
     }

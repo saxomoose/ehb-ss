@@ -45,6 +45,8 @@ class DropTenantsDB extends Command
             DB::connection('mysql')->setDatabaseName('hexclan');
             $dbs = DB::select('SHOW DATABASES LIKE "%_test"');
         } else if ($env == 'local') {
+            $dbs = DB::select('SHOW DATABASES LIKE "tenant_%_local"');
+        } else if ($env == 'production') {
             $dbs = DB::select('SHOW DATABASES LIKE "tenant_%"');
         }
 

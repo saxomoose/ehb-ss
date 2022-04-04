@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',// default value: 'guard' => 'web'
+        'guard' => 'sanctum', // default value: 'guard' => 'web'
         'passwords' => 'users',
     ],
 
@@ -39,8 +39,13 @@ return [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'sanctum' => [
+            'driver' => 'token',
+            'provider' => 'users'
         ]
     ],
+
 
     /*
     |--------------------------------------------------------------------------
@@ -61,7 +66,7 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
+            'driver' => 'eloquent', // default value: 'driver' => 'eloquent'
             'model' => App\Models\User::class,
         ],
 

@@ -18,8 +18,6 @@ class CreateBankAccountsTable extends Migration
             $table->string('beneficiary_name');
             $table->string('bic');
             $table->string('iban');
-            $table->foreignUuid('created_by')->constrained('users', 'id');
-            $table->foreignUuid('updated_by')->constrained('users', 'id');
             $table->timestamps();
         });
     }

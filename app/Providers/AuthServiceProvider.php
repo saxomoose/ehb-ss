@@ -2,8 +2,22 @@
 
 namespace App\Providers;
 
+use App\Models\BankAccount;
+use App\Models\Category;
+use App\Models\Event;
+use App\Models\Item;
+use App\Models\Tenant;
+use App\Models\Transaction;
+use App\Models\User;
+use App\Policies\BankAccountPolicy;
+use App\Policies\CategoryPolicy;
+use App\Policies\EventPolicy;
+use App\Policies\EventUserPolicy;
+use App\Policies\ItemPolicy;
+use App\Policies\TenantPolicy;
+use App\Policies\TransactionPolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -13,7 +27,14 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        BankAccount::class => BankAccountPolicy::class,
+        Category::class => CategoryPolicy::class,
+        Event::class => EventPolicy::class,
+        EventUser::class => EventUserPolicy::class,
+        Item::class => ItemPolicy::class,
+        Tenant::class => TenantPolicy::class,
+        Transaction::class => TransactionPolicy::class,
+        User::class => UserPolicy::class
     ];
 
     /**

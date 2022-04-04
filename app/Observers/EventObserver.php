@@ -16,8 +16,8 @@ class EventObserver
      */
     public function created(Event $event)
     {
-        $user = User::firstWhere('ability', '=', 'admin');
-        $event->users()->attach($user->id, ['ability' => 'admin']);
+        // $user = User::firstWhere('ability', '=', 'admin');
+        // $event->users()->attach($user->id, ['ability' => 'admin']);
     }
 
     /**

@@ -9,6 +9,8 @@ use App\Http\Resources\UserResource;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -21,6 +23,9 @@ class EventController extends Controller
      */
     public function index()
     {
+        $guard = Auth::getDefaultDriver();
+        $tokenGuard = Auth::guard('sanctum');
+
         return EventResource::collection(Event::all());
     }
 

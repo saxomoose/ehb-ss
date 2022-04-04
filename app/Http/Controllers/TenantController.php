@@ -12,6 +12,16 @@ use Illuminate\Validation\Rule;
 class TenantController extends Controller
 {
     /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Tenant::class, 'tenant');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response

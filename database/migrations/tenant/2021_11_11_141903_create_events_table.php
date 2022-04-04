@@ -18,8 +18,6 @@ class CreateEventsTable extends Migration
             $table->foreignId('bank_account_id')->constrained()->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name');
             $table->date('date');
-            $table->foreignUuid('created_by')->constrained('users', 'id');
-            $table->foreignUuid('updated_by')->constrained('users', 'id');
             $table->timestamps();
         });
     }

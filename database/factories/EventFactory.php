@@ -27,14 +27,11 @@ class EventFactory extends Factory
         $tenantName = tenant()->name;
         $name = "{$tenantName}_event_{$count}";
         $count++;
-        $userId = User::firstWhere('ability', '=', 'admin');
 
         return [
             //'id' => $this->faker->uuid(),
             'name' => $name,
             'date' => $this->faker->date('Y-m-d'),
-            'created_by' => $userId,
-            'updated_by' => $userId
         ];
     }
 }

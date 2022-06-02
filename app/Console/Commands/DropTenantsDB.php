@@ -41,11 +41,12 @@ class DropTenantsDB extends Command
     {
         $env = App::environment();
         if ($env == 'testing') {
-            config(['database.connections.mysql.database' => 'hexclan']);
-            DB::connection('mysql')->setDatabaseName('hexclan');
             $dbs = DB::select('SHOW DATABASES LIKE "%_test"');
         } else if ($env == 'local') {
-            $dbs = DB::select('SHOW DATABASES LIKE "tenant_%_local"');
+            config(['database.connections.mysql.database' => 'hexclan']);
+            DB::connection('mysql')->setDatabaseName('hexclan');
+            DB::reconnect();
+            $dbs = DB::select('SHOW DATABASES LIKE "tenant_%"');
         } else if ($env == 'production') {
             $dbs = DB::select('SHOW DATABASES LIKE "tenant_%"');
         }

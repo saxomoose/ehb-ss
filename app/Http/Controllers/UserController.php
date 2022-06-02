@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
@@ -45,10 +46,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if ($user->ability == 'admin') {
-            return response()->json(['error' => 'The admin user cannot be updated.'], Response::HTTP_NOT_IMPLEMENTED);
-        }
-
         $validator = Validator::make($request->all(), [
             'data' => 'required|array:name,email',
             'data.name' => 'required|max:255',
@@ -71,6 +68,12 @@ class UserController extends Controller
         $user->fill($diff->toArray());
         $user->save();
 
+        // If user email is updated, new register process is initiated.
+        if ($diff->has('email')) {
+            $user->tokens()->delete();
+            event(new Registered($user));
+        }
+
         return (new UserResource($user))
             ->response()
             ->setStatusCode(Response::HTTP_OK);
@@ -89,13 +92,13 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    // Seeds the email of a user in the db. The email existence is tested during registration.
+    // Seeds the email of a user in the db. The email existence is tested during registration. Admin is able to seed coordinator, ''. coordinator is only able to seed ''.
     public function seed(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'data' => 'required|array:email,ability',
             'data.email' => ['required', 'email', Rule::unique('users', 'email'), 'max:255'],
-            'data.ability' => ['required', Rule::in(['manager', 'seller'])]
+            'data.ability' => ['required', Rule::in(['coordinator', ''])]
         ]);
 
         if ($validator->fails()) {
@@ -121,13 +124,10 @@ class UserController extends Controller
     public function toggleIsActive(User $user)
     {
         // Only managers and sellers can be deactivated.
-        if ($user->is_active && $user->ability != 'admin') {
+        if ($user->is_active) {
             $user->is_active = false;
             $user->pin_code = -1;
             $user->save();
-            foreach ($user->roles as $role) {
-                $role->tokens()->delete();
-            }
             $user->tokens()->delete();
 
             return response()->noContent();

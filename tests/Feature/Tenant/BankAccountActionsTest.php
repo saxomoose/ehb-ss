@@ -10,7 +10,7 @@ use Tests\TenantTestCase;
 
 class BankAccountActionsTest extends TenantTestCase
 {
-    public function getAbilities()
+    public function getTopLevelAbilities()
     {
         return [
             'admin' => ['admin'],
@@ -22,7 +22,7 @@ class BankAccountActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\BankAccountController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function getBankAccount_WhenAdminOrManager_Returns200($ability)
     {

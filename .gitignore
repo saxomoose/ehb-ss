@@ -6,8 +6,10 @@ _ide_helper.php
 .env.testing
 .gcloudignore
 .phpunit.result.cache
+/.devcontainer
 /.idea
 /.vscode
+/docker
 /html-coverage
 /node_modules
 /public/css/app.css
@@ -20,6 +22,7 @@ _ide_helper.php
 app.yaml
 docker-compose.override.yml
 docker-compose.yml
+hexclan-api.code-workspace
 Homestead.json
 Homestead.yaml
 npm-debug.log

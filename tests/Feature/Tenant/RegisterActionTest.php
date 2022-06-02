@@ -16,8 +16,8 @@ class RegisterActionTest extends TenantTestCase
 {
     use WithFaker;
     /**
-     * @covers \App\Http\Controllers\RegisterController
      * @test
+     * @covers \App\Http\Controllers\RegisterController
      */
     public function register_WithValidInput_Returns200()
     {
@@ -47,8 +47,8 @@ class RegisterActionTest extends TenantTestCase
 
     /**
      * Fails unless saveQuietly is used. Because this route is not subject to auth:sanctum.
-     * @covers \App\Http\Controllers\RegisterController
      * @test
+     * @covers \App\Http\Controllers\RegisterController
      */
     public function register_WithValidInput_SendsPINCodeNotification()
     {

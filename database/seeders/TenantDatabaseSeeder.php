@@ -37,18 +37,19 @@ class TenantDatabaseSeeder extends Seeder
             'id' => (string) Str::uuid(),
             'email' => $adminEmail,
             'ability' => 'admin',
-            'created_by' => $centralAdmin->id,
-            'updated_by' => $centralAdmin->id
         ]);
 
         // Everything hereunder to be commented out in production.
         $bankAccount = BankAccount::factory()->create();
 
+        // 1 manager and 1 seller per event
         $events = Event::factory(2)
             ->for($bankAccount)
-            ->has(User::factory()->count(1))
+            ->hasAttached(User::factory()->count(1), ['ability' => 'manager'])
+            ->hasAttached(User::factory()->count(1), ['ability' => 'seller'])
             ->create();
 
+        // 2 item categories per event (4)
         $categories = collect();
         foreach ($events as $event) {
             $categories->push(Category::factory(2)
@@ -57,6 +58,7 @@ class TenantDatabaseSeeder extends Seeder
         }
         $flattenedCategories = $categories->flatten();
 
+        // 5 item per category (20)
         $items = collect();
         foreach ($flattenedCategories as $category) {
             $items->push(Item::factory(5)
@@ -66,7 +68,19 @@ class TenantDatabaseSeeder extends Seeder
 
         $flattenedItems = $items->flatten();
 
-        $users = User::where('email', '!=', 'admin@' . "{$tenantName}" . '.' . config('tenancy.central_domains.0'))->get();
+
+        // 2 transactions per non-admin user with seller role (4). 5 items per transaction.
+        $resultSet = DB::table('users as u')
+            ->join('event_user as eu', 'u.id', '=', 'eu.user_id')
+            ->where('u.email', '!=', 'admin@' . "{$tenantName}" . '.' . config('tenancy.central_domains.0'))
+            ->where('eu.ability', '=', 'seller')
+            ->select('u.id')
+            ->get();
+        $users = collect();
+        foreach ($resultSet as $item) {
+            $users->push(User::findOrFail($item->id));
+        }
+
         foreach ($users as $user) {
             $randomItems = $flattenedItems->random(5);
 

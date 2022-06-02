@@ -6,9 +6,6 @@ use App\Models\BankAccount;
 use App\Models\Event;
 use App\Models\User;
 use App\Http\Middleware\Authenticate;
-use App\Http\Middleware\EnsureUserBelongsToEvent;
-use App\Http\Middleware\RestrictToAccountableUser;
-use App\Models\Tenant;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
@@ -22,12 +19,12 @@ class EventActionsTest extends TenantTestCase
 {
     use WithFaker;
 
-    public function getAbilities()
+    public function getTopLevelAbilities()
     {
         return [
             'admin' => ['admin'],
-            'manager' => ['manager'],
-            'seller' => ['seller']
+            'coordinator' => ['coordinator'],
+            '' => ['']
         ];
     }
 
@@ -51,7 +48,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function getEvents_WhenAdminOrManager_Returns200($ability)
     {
@@ -80,7 +77,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function postEvent_WithValidInput_Returns201($ability)
     {
@@ -147,7 +144,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function getEvent_WhenAdminOrManager_Returns200($ability)
     {
@@ -221,7 +218,7 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getAbilities
+     * @dataProvider getTopLevelAbilities
      */
     public function deleteEvent_WhenAdmin_Returns204($ability)
     {

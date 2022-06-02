@@ -58,16 +58,16 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
-        'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
-        'accountable' => \App\Http\Middleware\RestrictToAccountableUser::class,
+        //'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class,
+        //'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
+        //'accountable' => \App\Http\Middleware\RestrictToAccountableUser::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'member' => \App\Http\Middleware\EnsureUserBelongsToEvent::class,
-        'own' => \App\Http\Middleware\RestrictToOwnResources::class,
+        //'member' => \App\Http\Middleware\EnsureUserBelongsToEvent::class,
+        //'own' => \App\Http\Middleware\RestrictToOwnResources::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,

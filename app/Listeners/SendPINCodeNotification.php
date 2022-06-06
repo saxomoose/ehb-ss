@@ -27,6 +27,6 @@ class SendPINCodeNotification
      */
     public function handle(Registered $event)
     {
-        $event->user->notify(new PINCodeNotification());
+        $event->user->notify(new PINCodeNotification($event->user->pin_code, $event->user->id));
     }
 }

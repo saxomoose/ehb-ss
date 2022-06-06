@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ActivateController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\EventUserTokenController;
 use App\Http\Controllers\EventUserController;
+use App\Http\Controllers\EventUserTokenController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PINCodeController;
@@ -47,8 +48,10 @@ Route::prefix(
     'throttle:open',
 ])->group(function () {
     Route::post('register', RegisterController::class);
+    Route::post('pincode/{user}', [PINCodeController::class, 'activate'])->name('pin.activate');
+    Route::get('pincode' , [PINCodeController::class, 'confirm'])->name('pin.confirm');
+    Route::put('pincode/{user}', [PINCodeController::class, 'reset'])->name('pin.reset');
     Route::post('login', LoginController::class);
-    Route::put('pincode/{user}', PINCodeController::class); // Route used to update pin code
 });
 
 // Universal API routes - auth.
@@ -150,5 +153,6 @@ Route::prefix(
 
 
 Route::fallback(function () {
+    xdebug_info();
     return response()->json(['message' => 'This route does not exist.'], Response::HTTP_NOT_FOUND);
 });

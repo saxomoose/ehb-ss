@@ -124,15 +124,14 @@ class UserController extends Controller
     public function toggleIsActive(User $user)
     {
         // Only managers and sellers can be deactivated.
-        if ($user->is_active) {
-            $user->is_active = false;
-            $user->pin_code = -1;
+        if ($user->status == 1) {
+            $user->status = -1;
             $user->save();
             $user->tokens()->delete();
 
             return response()->noContent();
         } else {
-            $user->is_active = true;
+            $user->status = 1;
             $user->save();
 
             return response()->noContent();

@@ -11,14 +11,18 @@ class PINCodeNotification extends Notification
 {
     use Queueable;
 
+    public $pinCode;
+    public $userId;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($pinCode, $userId)
     {
-        //
+        $this->pinCode = $pinCode; 
+        $this->userId = $userId;
     }
 
     /**
@@ -41,11 +45,11 @@ class PINCodeNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('Hexclan PIN code')
-                    ->line('Please provide the PIN code hereunder together with your credentials during your first login on the app. The first login should occur within 5 minutes of receiving this e-mail.')
-                    ->line("PIN code: {$notifiable->pin_code}")
-                    ->line("Use this number to request a new PIN code: {$notifiable->id}");
-
+                    ->view("vendor.notifications.email", [
+                        'pinCode' => $this->pinCode,
+                        'userId' => $this->userId
+                    ])
+                    ->subject('Hexclan - Activate your account');
     }
 
     /**

@@ -21,11 +21,11 @@ class LoginController extends Controller
             'data' => 'required|array:email,password,pin_code,device_name',
             'data.email' => ['required', 'email', Rule::exists('users', 'email'), 'max:255'],
             'data.password' => 'required',
-            'data.pin_code' => 'required|integer|digits:6',
             'data.device_name' => 'required'
         ]);
 
         if ($validator->fails()) {
+            
             return response()->json(['error' => 'Validation failed.'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -34,37 +34,22 @@ class LoginController extends Controller
 
         $user = User::with(['tokens'])->firstWhere('email', $validatedAttributes['email']);
 
-        if ($user->pin_code == -1) {
-            return response()->json(['error' => 'The account is deactivated.'], Response::HTTP_FORBIDDEN);
-        }
-
         // Checking user credentials.
         if (!isset($user)) {
+            
             abort(Response::HTTP_NOT_FOUND);
         } else if (!Hash::check($validatedAttributes['password'], $user->password)) {
+            
             return response()->json(['error' => 'The provided credentials are incorrect'], Response::HTTP_UNAUTHORIZED);
         }
 
-        // Login action always expects a pin code but is only checked if user is not active.
-        if (!$user->is_active) {
-            // Rejects login if pin code timestamp is older than 5 minutes.
-            $diff = $user->pin_code_timestamp->diff(Carbon::now());
-            if (!$user->is_active && ($diff->i > 5 && $diff->s > 0)) {
-                return response()->json(['error' => 'The pin code has expired. Please request a new one.'], Response::HTTP_FORBIDDEN);
-            } else if ($user->pin_code != $validatedAttributes['pin_code']) {
-                return response()->json(['error' => 'The provided pin code is incorrect'], Response::HTTP_UNAUTHORIZED);
-            } else {
-                $user->is_active = true;
-                $user->saveQuietly();
-            }
-        }
-
-        // User is active. The user token for the user is created. The ability for global actions (create event, create bank account,...) is set.
-        if ($user->is_active && $user->tokens->isEmpty()) {
+        // User is active. The user token for the user is created.
+        if ($user->status == 1 && $user->tokens->isEmpty()) {
             $token = $user->createToken($validatedAttributes['device_name'], []);
 
             return response()->json(['data' => $token->plainTextToken], Response::HTTP_OK);
         } else {
+            
             return response()->json(['error' => 'The user token is already set.'], Response::HTTP_FORBIDDEN);
         }
     }

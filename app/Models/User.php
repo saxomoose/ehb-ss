@@ -30,7 +30,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'id' => 'string',
-        'is_active' => 'boolean',
         'pin_code_timestamp' => 'datetime'
     ];
 
@@ -41,7 +40,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'is_active',
+        'status',
         'ability',
         'pin_code',
         'pin_code_timestamp'

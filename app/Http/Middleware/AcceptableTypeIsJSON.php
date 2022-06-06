@@ -18,7 +18,7 @@ class AcceptableTypeIsJSON
     public function handle(Request $request, Closure $next)
     {
         if (!$request->wantsJson()) {
-            return response()->json(['error' => 'This API only serves JSON responses'], Response::HTTP_NOT_ACCEPTABLE);
+            return response()->json(['error' => 'This API only serves JSON responses.'], Response::HTTP_NOT_ACCEPTABLE);
         }
 
         return $next($request);

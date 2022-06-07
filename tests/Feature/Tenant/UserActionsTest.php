@@ -23,7 +23,6 @@ class UserActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\UserController
      * @dataProvider getTopLevelAbilities
      */
@@ -52,7 +51,6 @@ class UserActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      */
     public function seed_()
     {

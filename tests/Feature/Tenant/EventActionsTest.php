@@ -46,7 +46,6 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */
@@ -75,7 +74,6 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */
@@ -118,7 +116,6 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getInvalidData
      */
@@ -142,7 +139,6 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */
@@ -174,7 +170,6 @@ class EventActionsTest extends TenantTestCase
 
     /**
      * Test with user with ability manager.
-     * @test
      * @covers \App\Http\Controllers\EventController
      */
     public function patchEvent_WithPassingValidation_Returns200()
@@ -216,7 +211,6 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */

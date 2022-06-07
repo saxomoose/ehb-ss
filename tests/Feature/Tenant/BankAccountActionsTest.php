@@ -20,7 +20,6 @@ class BankAccountActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\BankAccountController
      * @dataProvider getTopLevelAbilities
      */

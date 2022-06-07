@@ -14,54 +14,63 @@ class PINCodeController extends Controller
     public function activate(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
-            //'data' => 'required|array:pin_code',
             'pin_code' => 'required|integer|digits:6'
         ]);
 
         if ($validator->fails()) {
+            $message = ['message' => 'Validation failed.'];
 
-            return response()->json(['error' => 'Validation failed.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         }
 
         $validatedAttributes = $validator->validated();
         
         if (!isset($user->pin_code)) {
+            $message = ['message' => 'The user is not yet registered.'];
 
-            return response()->json(['error' => 'The user is not yet registered.'], Response::HTTP_FORBIDDEN);
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         }
         
         if ($user->status == -1) {
+            $message = ['message' => 'The account is deactivated.'];
 
-            return response()->json(['error' => 'The account is deactivated.'], Response::HTTP_FORBIDDEN);
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         } else if ($user->status == 1) {
+            $message = ['message' => 'The account is already active.'];
 
-            return response()->json(['error' => 'The account is already active.'], Response::HTTP_FORBIDDEN);
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         } else if ($user->status == 0) {
             $diff = $user->pin_code_timestamp->diff(Carbon::now());
             if ($diff->i > 5 && $diff->s > 0) {
+                $message = ['message' => 'The pin code has expired.'];
 
-                return response()->json(['error' => 'The pin code has expired.'], Response::HTTP_FORBIDDEN);
+                return redirect()->action([PINCodeController::class, 'confirm'], $message);
             } else if ($user->pin_code != $validatedAttributes['pin_code']) {
+                $message = ['message' => 'The provided pin code is incorrect'];
 
-                return response()->json(['error' => 'The provided pin code is incorrect'], Response::HTTP_UNAUTHORIZED);
+                return redirect()->action([PINCodeController::class, 'confirm'], $message);
             } else {
                 $user->status = 1;
                 $user->saveQuietly();
+                $message = ['message' => 'Your account is now active. You can now log in from the app.'];
                 
-                return redirect()->route('pin.confirm');
+                return redirect()->action([PINCodeController::class, 'confirm'], $message);
             }
         }
     }
 
-    public function confirm()
+    public function confirm(Request $request)
     {
-        return view('pincode.confirm-activation');
+        $message = $request->query();
+        return view('pincode.confirm-activation', $message);
     }
     
     public function reset(User $user)
     {
         if (!isset($user->pin_code)) {
-            return response()->json(['error' => 'The user is not yet registered.'], Response::HTTP_FORBIDDEN);
+            $message = ['message' => 'The user is not yet registered.'];
+
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         }
 
         $diff = $user->pin_code_timestamp->diff(Carbon::now());
@@ -69,10 +78,13 @@ class PINCodeController extends Controller
             $user->pin_code = random_int(10 ** (6 - 1), (10 ** 6) - 1);
             $user->saveQuietly();
             $user->notify(new PINCodeNotification($user->pin_code, $user->id));
+            $message = ['message' => 'The activation process has been reset. Check your mailbox for a new email.'];
 
-            return response()->noContent();
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         } else {
-            return response()->json(['error' => 'The pin code has not expired.'], Response::HTTP_FORBIDDEN);
+            $message = ['message' => 'The pin code has not expired.'];
+
+            return redirect()->action([PINCodeController::class, 'confirm'], $message);
         }
     }
 }

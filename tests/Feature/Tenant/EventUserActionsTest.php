@@ -21,7 +21,6 @@ class EventUserActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @dataProvider getRoles
      */
     public function upsert_WithValidInput_Returns201($ability, $role)

@@ -20,7 +20,7 @@ class TransactionPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'manager';
     }
 
     /**
@@ -130,7 +130,7 @@ class TransactionPolicy
     {
         $event = Event::findOrFail($transaction->event_id);
 
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }

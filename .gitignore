@@ -9,6 +9,7 @@ _ide_helper.php
 /.devcontainer
 /.idea
 /.vscode
+/docker
 /html-coverage
 /node_modules
 /public/css/app.css
@@ -22,9 +23,8 @@ app.yaml
 docker-compose.override.yml
 docker-compose.yml
 hexclan-api.code-workspace
-Homestead.json
-Homestead.yaml
 npm-debug.log
 routes.csv
 todo.md
 yarn-error.log
+app.yml

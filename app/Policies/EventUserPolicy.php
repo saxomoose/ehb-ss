@@ -44,7 +44,7 @@ class EventUserPolicy
 
     public function upsert(User $user, Event $event)
     {
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }
@@ -81,7 +81,7 @@ class EventUserPolicy
      */
     public function delete(User $user, Event $event)
     {
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }
@@ -108,6 +108,13 @@ class EventUserPolicy
     public function forceDelete(User $user, EventUser $eventUser)
     {
         //
+    }
+
+    public function seed(User $user, Event $event)
+    {
+        return $user->isManager($event->id)
+        ? Response::allow()
+        : Response::deny('The user is not the manager of this event.');
     }
 
     public function viewTransactions(User $user, Event $event, User $model)

@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Notifications\PINCodeNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -70,8 +72,10 @@ class UserController extends Controller
 
         // If user email is updated, new register process is initiated.
         if ($diff->has('email')) {
-            $user->tokens()->delete();
-            event(new Registered($user));
+            $user->pin_code = random_int(10 ** (6 - 1), (10 ** 6) - 1);
+            $user->pin_code_timestamp = Carbon::now();
+            $user->saveQuietly();
+            $user->notify(new PINCodeNotification($user->pin_code, $user->id));
         }
 
         return (new UserResource($user))
@@ -92,47 +96,20 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    // Seeds the email of a user in the db. The email existence is tested during registration. Admin is able to seed coordinator, ''. coordinator is only able to seed ''.
-    public function seed(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array:email,ability',
-            'data.email' => ['required', 'email', Rule::unique('users', 'email'), 'max:255'],
-            'data.ability' => ['required', Rule::in(['coordinator', ''])]
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed.'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $validatedAttributes = $validator->validated();
-
-        $rawValidatedAttributes = $validator->validated();
-        $validatedAttributes = $rawValidatedAttributes['data'];
-
-        $user = User::create([
-            'id' => (string) Str::uuid(),
-            'email' => $validatedAttributes['email'],
-            'ability' => $validatedAttributes['ability']
-        ]);
-
-        return (new UserResource($user))
-            ->response()
-            ->setStatusCode(Response::HTTP_CREATED);
-    }
+    
 
     public function toggleIsActive(User $user)
     {
-        // Only managers and sellers can be deactivated.
-        if ($user->is_active) {
-            $user->is_active = false;
-            $user->pin_code = -1;
+        if ($user->status == 1) {
+            $user->status = -1;
+            $user->pin_code = null;
+            $user->pin_code_timestamp = null;
             $user->save();
             $user->tokens()->delete();
 
             return response()->noContent();
         } else {
-            $user->is_active = true;
+            $user->status = 1;
             $user->save();
 
             return response()->noContent();

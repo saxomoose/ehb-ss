@@ -18,4 +18,18 @@ class BankAccount extends Model
     {
         return $this->hasMany(Event::class);
     }
+
+    public function getManagers()
+    {
+        $managers = collect();
+        foreach($this->events as $event) {
+            $managers->push($event->getManager());
+        }
+        return $managers;
+    }
+
+
+    public function isManagedBy($userId) {
+        return $this->getManagers()->pluck('id')->contains($userId);
+    }
 }

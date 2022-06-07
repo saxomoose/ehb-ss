@@ -15,38 +15,32 @@ class BankAccountActionsTest extends TenantTestCase
         return [
             'admin' => ['admin'],
             'manager' => ['manager'],
-            'seller' => ['seller']
+            'seller' => ['']
         ];
     }
 
     /**
      * @test
      * @covers \App\Http\Controllers\BankAccountController
-     * @dataProvider getTopLevelAbilities
      */
-    public function getBankAccount_WhenAdminOrManager_Returns200($ability)
+    public function getBankAccount_WhenIsManagedByUser_Returns200()
     {
         $bankAccount = BankAccount::inRandomOrder()->first();
 
         Sanctum::actingAs(
-            User::firstWhere('id', '=', $bankAccount->created_by),
-            ["{$ability}"]
+            User::firstWhere('id', $bankAccount->getManagers()->first()->id),['']
         );
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/bankaccounts/{$bankAccount->id}");
 
-        if ($ability == 'admin' || $ability == 'manager') {
-            $response->assertJson(
-                fn (AssertableJson $json) =>
-                $json->has(
-                    'data',
-                    fn ($json) =>
-                    $json->hasAll('id', 'beneficiary_name', 'bic', 'iban')
-                        ->etc()
-                )
-            )->assertOk();
-        } else if ($ability == 'seller') {
-            $response->assertForbidden();
-        }
+        $response->assertJson(
+            fn (AssertableJson $json) =>
+            $json->has(
+                'data',
+                fn ($json) =>
+                $json->hasAll('id', 'beneficiary_name', 'bic', 'iban')
+                    ->etc()
+            )
+        )->assertOk();
     }
 }

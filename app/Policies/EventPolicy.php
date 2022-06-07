@@ -26,7 +26,7 @@ class EventPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'manager';
     }
 
     /**
@@ -38,7 +38,9 @@ class EventPolicy
      */
     public function view(User $user, Event $event)
     {
-        return $user->ability == 'coordinator';
+        return $user->isManager($event->id)
+        ? Response::allow()
+        : Response::deny('The user is not the manager of this event.');
     }
 
     /**
@@ -49,7 +51,7 @@ class EventPolicy
      */
     public function create(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'manager';
     }
 
     /**
@@ -61,7 +63,9 @@ class EventPolicy
      */
     public function update(User $user, Event $event)
     {
-        return $user->ability == 'coordinator';
+        return $user->isManager($event->id)
+        ? Response::allow()
+        : Response::deny('The user is not the manager of this event.');
     }
 
     /**
@@ -102,21 +106,21 @@ class EventPolicy
 
     public function viewCategories(User $user, Event $event)
     {
-        return $event->isManager($user->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+        return $user->isManager($event->id)
+        ? Response::allow()
+        : Response::deny('The user is not the manager of this event.');
     }
 
     public function viewTransactions(User $user, Event $event)
     {
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }
 
     public function viewUsers(User $user, Event $event)
     {
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }

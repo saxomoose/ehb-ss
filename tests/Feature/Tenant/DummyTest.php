@@ -16,7 +16,6 @@ class DummyTest extends TenantTestCase
     use WithFaker;
 
     /**
-     * @test
      */
     public function getEvents()
     {
@@ -29,7 +28,6 @@ class DummyTest extends TenantTestCase
     }
 
     /**
-     * @test
      */
     public function getEvent()
     {
@@ -44,7 +42,6 @@ class DummyTest extends TenantTestCase
     }
 
     /**
-     * @test
      */
     public function seed_()
     {

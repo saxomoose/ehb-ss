@@ -12,7 +12,6 @@ use Tests\TenantTestCase;
 class CategoryActionsTest extends TenantTestCase
 {
     /**
-     * @test
      */
     public function getCategory()
     {
@@ -29,7 +28,6 @@ class CategoryActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      */
     public function postCategory()
     {

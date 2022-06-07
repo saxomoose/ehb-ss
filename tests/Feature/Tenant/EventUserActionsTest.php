@@ -14,10 +14,29 @@ class EventUserActionsTest extends TenantTestCase
     {
         return [
             'admin' => ['admin', ''],
-            'coordinator' => ['coordinator', ''],
-            'manager' => ['', 'manager'],
+            'manager' => ['manager', 'manager'],
             'seller' => ['', 'seller']
         ];
+    }
+
+    /**
+     */
+    public function seed_WhenUserIsManager_Returns201()
+    {
+        Sanctum::actingAs(
+            User::factory()->makeOne(['ability' => 'manager']),
+            []
+        );
+
+        DB::beginTransaction();
+        $response = $this->postJson("{$this->domainWithScheme}/api/users", [
+            'data' => [
+                'email' => $this->faker->email(),
+                'ability' => 'coordinator'
+            ]
+        ]);
+
+        DB::rollBack();
     }
 
     /**
@@ -34,17 +53,15 @@ class EventUserActionsTest extends TenantTestCase
         if ($role == 'manager') {
             Sanctum::actingAs(
                 $manager,
-                []
+                ['']
             );
         } else {
             Sanctum::actingAs(
                 $user,
-                []
+                ['']
             );
         }
-        if ($role == 'seller') {
-            $event->users()->attach($user, ['ability' => "{$role}"]);
-        }
+
         $userModel = User::factory()->createOne();
 
         $response = $this->putJson("{$this->domainWithScheme}/api/events/{$event->id}/users/{$userModel->id}", [
@@ -60,7 +77,7 @@ class EventUserActionsTest extends TenantTestCase
                 'user_id' => $userModel->id,
                 'ability' => 'seller'
             ]);
-        } else if ($ability == 'coordinator' || $role == 'seller') {
+        } else if ($role == 'seller') {
             $response->assertForbidden();
             $this->assertDatabaseMissing('event_user', [
                 'event_id' => $event->id,

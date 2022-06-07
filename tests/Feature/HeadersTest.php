@@ -12,7 +12,6 @@ class HeadersTest extends TestCase
 
     /**
      * @covers App\Http\Middleware\AcceptableTypeIsJson
-     * @test
      */
     public function anyRequestWithUnacceptableAcceptHeaderType_Returns406()
     {
@@ -29,7 +28,6 @@ class HeadersTest extends TestCase
 
     /**
      * @covers \App\Http\Middleware\SecureResponseHeaders
-     * @test
      */
     public function anyRequest_ReturnsResponseWithSecureHeaders()
     {

@@ -31,9 +31,13 @@ class RegisterController extends Controller
         $validatedAttributes = $rawValidatedAttributes['data'];
 
         $user = User::firstWhere('email', $validatedAttributes['email']);
-        $pinCode = $user->pin_code;
+
+        if (!isset($user)) {
+            abort(Response::HTTP_NOT_FOUND);
+        }
+
         // Refuses request if user already registered. No check on pin code validity.
-        if (!isset($pinCode)) {
+        if (!isset($user->pin_code)) {
             $user->name = $validatedAttributes['name'];
             $user->password = bcrypt($validatedAttributes['password']);
             $user->pin_code = random_int(10 ** (6 - 1), (10 ** 6) - 1); // Generates random positive 6-digits integer.
@@ -44,9 +48,11 @@ class RegisterController extends Controller
             event(new Registered($user));
 
             return response()->noContent();
-        } else if ($pinCode == -1) {
+        } else if ($user->status == -1) {
+            
             return response()->json(['error' => 'The account is deactivated.'], Response::HTTP_FORBIDDEN);
         } else {
+            
             return response()->json(['error' => 'The user is already registered.'], Response::HTTP_FORBIDDEN);
         }
     }

@@ -1,62 +1,14 @@
-@component('mail::message')
-{{-- Greeting --}}
-@if (! empty($greeting))
-# {{ $greeting }}
-@else
-@if ($level === 'error')
-# @lang('Whoops!')
-@else
-# @lang('Hello!')
-@endif
-@endif
+<form method="POST" action={{ route('pin.activate', ['user' => $userId]) }}>
+    @csrf
+    <label>Please activate your account within 5 minutes of receiving this email.
+        <input type="hidden" name="pin_code" value="{{ $pinCode }}">
+    </label>
+    <button type="submit">Activate your account</button>
+</form>
 
-{{-- Intro Lines --}}
-@foreach ($introLines as $line)
-{{ $line }}
-
-@endforeach
-
-{{-- Action Button --}}
-@isset($actionText)
-<?php
-    switch ($level) {
-        case 'success':
-        case 'error':
-            $color = $level;
-            break;
-        default:
-            $color = 'primary';
-    }
-?>
-@component('mail::button', ['url' => $actionUrl, 'color' => $color])
-{{ $actionText }}
-@endcomponent
-@endisset
-
-{{-- Outro Lines --}}
-@foreach ($outroLines as $line)
-{{ $line }}
-
-@endforeach
-
-{{-- Salutation --}}
-@if (! empty($salutation))
-{{ $salutation }}
-@else
-@lang('Regards'),<br>
-{{ 'The ' . config('app.name') . ' team' }}
-@endif
-
-{{-- Subcopy --}}
-@isset($actionText)
-@slot('subcopy')
-@lang(
-    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\n".
-    'into your web browser:',
-    [
-        'actionText' => $actionText,
-    ]
-) <span class="break-all">[{{ $displayableActionUrl }}]({{ $actionUrl }})</span>
-@endslot
-@endisset
-@endcomponent
+<form method="POST" action={{ route('pin.reset', ['user' => $userId]) }}>
+    @csrf
+    @method('PUT')
+    <p>If the activation link has expired, please reset the activation process by clicking on the button below. You will receive a new email to activate your account.</p>
+    <button type="submit">Reset the activation process</button>
+</form>

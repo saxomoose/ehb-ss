@@ -30,7 +30,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'id' => 'string',
-        'is_active' => 'boolean',
         'pin_code_timestamp' => 'datetime'
     ];
 
@@ -41,7 +40,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'is_active',
+        'status',
         'ability',
         'pin_code',
         'pin_code_timestamp'
@@ -78,5 +77,11 @@ class User extends Authenticatable
     public function isMember($eventId)
     {
         return $this->events->pluck('id')->contains($eventId);
+    }
+
+    public function isManager($eventId)
+    {
+        $rolesAsManager = $this->roles->where('ability', '=', 'manager');
+        return $rolesAsManager->pluck('event_id')->contains($eventId);
     }
 }

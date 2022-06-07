@@ -18,7 +18,7 @@ class UserActionsTest extends TenantTestCase
         return [
             'admin' => ['admin'],
             'manager' => ['manager'],
-            'seller' => ['seller']
+            'seller' => ['']
         ];
     }
 
@@ -27,16 +27,15 @@ class UserActionsTest extends TenantTestCase
      * @covers \App\Http\Controllers\UserController
      * @dataProvider getTopLevelAbilities
      */
-    public function getUsers_WhenAdminOrWrite_Returns200($ability)
+    public function getUsers_WhenAdmin_Returns200($ability)
     {
         Sanctum::actingAs(
-            User::factory()->makeOne(),
-            ["{$ability}"]
+            User::factory()->makeOne(['ability' => $ability]),['']
         );
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/users");
 
-        if ($ability == 'admin' || $ability == 'manager') {
+        if ($ability == 'admin') {
             $response->assertJson(
                 fn (AssertableJson $json) =>
                 $json->has(
@@ -46,29 +45,8 @@ class UserActionsTest extends TenantTestCase
                         ->etc()
                 )
             )->assertOk();
-        } else if ($ability == 'seller') {
+        } else if ($ability == 'manager' || $ability == '') {
             $response->assertForbidden();
         }
-    }
-
-    /**
-     * @test
-     */
-    public function seed_()
-    {
-        Sanctum::actingAs(
-            User::factory()->makeOne(['ability' => 'coordinator']),
-            []
-        );
-
-        DB::beginTransaction();
-        $response = $this->postJson("{$this->domainWithScheme}/api/users", [
-            'data' => [
-                'email' => $this->faker->email(),
-                'ability' => 'coordinator'
-            ]
-        ]);
-
-        DB::rollBack();
     }
 }

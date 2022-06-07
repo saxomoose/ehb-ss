@@ -23,8 +23,8 @@ class EventController extends Controller
      */
     public function index()
     {
-        $guard = Auth::getDefaultDriver();
-        $tokenGuard = Auth::guard('sanctum');
+        // $guard = Auth::getDefaultDriver();
+        // $tokenGuard = Auth::guard('sanctum');
 
         return EventResource::collection(Event::all());
     }

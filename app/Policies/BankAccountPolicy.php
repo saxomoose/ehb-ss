@@ -25,7 +25,7 @@ class BankAccountPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'manager';
     }
 
     /**
@@ -37,7 +37,7 @@ class BankAccountPolicy
      */
     public function view(User $user, BankAccount $bankAccount)
     {
-        return $user->ability == 'coordinator';
+        return $bankAccount->isManagedBy($user->id);
     }
 
     /**
@@ -48,7 +48,7 @@ class BankAccountPolicy
      */
     public function create(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'manager';
     }
 
     /**
@@ -60,7 +60,7 @@ class BankAccountPolicy
      */
     public function update(User $user, BankAccount $bankAccount)
     {
-        return $user->ability == 'coordinator';
+        return $bankAccount->isManagedBy($user->id);
     }
 
     /**

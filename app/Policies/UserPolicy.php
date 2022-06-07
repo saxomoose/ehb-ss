@@ -10,13 +10,6 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function before(User $user)
-    {
-        if ($user->ability == 'admin') {
-            return true;
-        }
-    }
-
     /**
      * Determine whether the user can view any models.
      *
@@ -25,7 +18,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'admin';
     }
 
     /**
@@ -37,12 +30,12 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        if ($user->ability == '') {
+        if ($user->ability == 'manager' || $user->ability == '') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');
         } else {
-            return $user->ability == 'coordinator';
+            return $user->ability == 'admin';
         }
     }
 
@@ -54,7 +47,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->ability == 'coordinator';
+        //
     }
 
     /**
@@ -66,15 +59,15 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-
+        
         if ($model->ability == 'admin') {
             $this->deny('The admin user cannot be updated.');
-        } else if ($user->ability == '') {
+        } 
+        // A user is only allowed to update his own profile.
+        else if ($user->ability == 'manager' || $user->ability == '') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');
-        } else {
-            return $user->ability == 'coordinator';
         }
     }
 
@@ -114,32 +107,24 @@ class UserPolicy
         //
     }
 
-    public function seed(User $user)
-    {
-        if ($user->ability == 'coordinator') {
-            return request()->input('data.ability') == ''
-                ? Response::allow()
-                : Response::deny('The user is only authorized to seed unprivileged users.');
-        }
-    }
-
     public function toggleIsActive(User $user, User $model)
     {
+        // Only managers and sellers can be deactivated.
         if ($model->ability == 'admin') {
             $this->deny("The admin user cannot be deactivated.");
         } else {
-            return $user->ability == 'coordinator';
+            return $user->ability == 'admin';
         }
     }
 
     public function viewEvents(User $user, User $model)
     {
-        if ($user->ability == '') {
+        if ($user->ability == 'manager' || $user->ability == '') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');
         } else {
-            return $user->ability == 'coordinator';
+            return $user->ability == 'admin';
         }
     }
 }

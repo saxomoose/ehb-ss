@@ -7,5 +7,4 @@ use Laravel\Sanctum\HasApiTokens;
 
 class EventUser extends Pivot
 {
-    use HasApiTokens;
 }

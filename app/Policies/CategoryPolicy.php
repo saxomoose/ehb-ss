@@ -28,7 +28,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'coordinator';
+        return $user->ability == 'manager';
     }
 
     /**
@@ -48,7 +48,7 @@ class CategoryPolicy
         //     : Response::deny('The user does not belong to this event.');
         $event = Event::findOrFail($category->event_id);
 
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }
@@ -61,7 +61,7 @@ class CategoryPolicy
      */
     public function create(User $user, Event $event)
     {
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }
@@ -77,7 +77,7 @@ class CategoryPolicy
     {
         $event = Event::findOrFail($category->event_id);
 
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }
@@ -122,7 +122,7 @@ class CategoryPolicy
     {
         $event = Event::findOrFail($category->event_id);
 
-        return $event->isManager($user->id)
+        return $user->isManager($event->id)
             ? Response::allow()
             : Response::deny('The user is not the manager of this event.');
     }

@@ -76,6 +76,7 @@ class PINCodeController extends Controller
         $diff = $user->pin_code_timestamp->diff(Carbon::now());
         if ($diff->i > 5 && $diff->s > 0) {
             $user->pin_code = random_int(10 ** (6 - 1), (10 ** 6) - 1);
+            $user->pin_code_timestamp = Carbon::now();
             $user->saveQuietly();
             $user->notify(new PINCodeNotification($user->pin_code, $user->id));
             $message = ['message' => 'The activation process has been reset. Check your mailbox for a new email.'];

@@ -32,6 +32,7 @@ class Event extends Model
     }
 
     /**
+     * A role is an ability with respect to an event.
      * This method returns a collection of pivot model instances.
      * @return mixed
      */
@@ -61,10 +62,5 @@ class Event extends Model
         return User::findOrFail($userId);
     }
 
-    // Returns manager of a specific event.
-    public function isManager($userId)
-    {
-        $managerUserId = $this->roles->firstWhere('ability', '=', 'manager')->user_id;
-        return $userId == $managerUserId;
-    }
+
 }

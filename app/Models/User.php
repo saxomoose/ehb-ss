@@ -78,4 +78,10 @@ class User extends Authenticatable
     {
         return $this->events->pluck('id')->contains($eventId);
     }
+
+    public function isManager($eventId)
+    {
+        $rolesAsManager = $this->roles->where('ability', '=', 'manager');
+        return $rolesAsManager->pluck('event_id')->contains($eventId);
+    }
 }

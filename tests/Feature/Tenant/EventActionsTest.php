@@ -23,7 +23,7 @@ class EventActionsTest extends TenantTestCase
     {
         return [
             'admin' => ['admin'],
-            'coordinator' => ['coordinator'],
+            'manager' => ['manager'],
             '' => ['']
         ];
     }
@@ -46,14 +46,14 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
+     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */
     public function getEvents_WhenAdminOrManager_Returns200($ability)
     {
         Sanctum::actingAs(
-            User::factory()->makeOne(),
-            ["{$ability}"]
+            User::factory()->makeOne(['ability' => $ability]),['']
         );
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/events");
@@ -74,20 +74,22 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
+     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */
     public function postEvent_WithValidInput_Returns201($ability)
     {
         Sanctum::actingAs(
-            User::inRandomOrder()->first(),
-            ["{$ability}"]
+            User::factory()->makeOne(['ability' => $ability]),['']
         );
+
         $event = Event::factory()
-            ->for(BankAccount::first(['id']))
-            ->make();
+            ->for(BankAccount::first())
+            ->makeOne();
 
         DB::beginTransaction();
+
         $response = $this->postJson("{$this->domainWithScheme}/api/events", [
             'data' => [
                 'name' => $event->name,
@@ -116,12 +118,13 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
+     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getInvalidData
      */
     public function postEvent_WithInvalidInput_Returns422($name, $date, $bank_account_id)
     {
-        $this->withoutMiddleware([Authenticate::class, CheckForAnyAbility::class]);
+        $this->withoutMiddleware();
 
         DB::beginTransaction();
         $response = $this->postJson("{$this->domainWithScheme}/api/events", [
@@ -139,17 +142,29 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
+     * @test
      * @covers \App\Http\Controllers\EventController
      * @dataProvider getTopLevelAbilities
      */
     public function getEvent_WhenAdminOrManager_Returns200($ability)
     {
-        $event = Event::inRandomOrder()->first();
+        DB::beginTransaction();
 
-        Sanctum::actingAs(
-            User::firstWhere('id', '=', $event->created_by),
-            ["{$ability}"]
-        );
+        $event = Event::inRandomOrder()->first();
+        $manager = $event->getManager();
+        $user = User::factory()->createOne(['ability' => $ability]);
+        
+        if ($ability == 'manager') {
+            Sanctum::actingAs(
+                $manager,
+                ['']
+            );
+        } else {
+            Sanctum::actingAs(
+                $user,
+                ['']
+            );
+        }
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/events/{$event->id}");
 
@@ -166,25 +181,29 @@ class EventActionsTest extends TenantTestCase
         } else if ($ability == 'seller') {
             $response->assertForbidden();
         }
+
+        DB::rollBack();
     }
 
     /**
+     * @test
      * Test with user with ability manager.
      * @covers \App\Http\Controllers\EventController
      */
     public function patchEvent_WithPassingValidation_Returns200()
     {
+        DB::beginTransaction();
+        
         $event = Event::inRandomOrder()->first();
-
+        $manager = $event->getManager();
         Sanctum::actingAs(
-            User::firstWhere('id', '=', $event->created_by),
-            ['manager']
+            $manager,
+            ['']
         );
 
-        $updatedName = Event::factory()->makeOne()->name;
+        $updatedName = 'updated_event_name';
         $updatedDate = Carbon::now()->toDateString();
 
-        DB::beginTransaction();
         $response = $this->patchJson("{$this->domainWithScheme}/api/events/{$event->id}", [
             'data' => [
                 'name' => $updatedName,

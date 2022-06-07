@@ -13,6 +13,7 @@ use Tests\CreatesApplication;
 })->createApplication();
 
 Artisan::call('config:cache');
+Artisan::call('custom:drop'); // Clean-up in case of interrupted tests.
 DB::statement('CREATE DATABASE hexclan_test');
 Artisan::call('migrate:fresh --seed');
 Artisan::call('tenants:seed');

@@ -61,6 +61,4 @@ class Event extends Model
         $userId = $this->roles->firstWhere('ability', '=', 'manager')->user_id;
         return User::findOrFail($userId);
     }
-
-
 }

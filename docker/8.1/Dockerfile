@@ -62,8 +62,8 @@ COPY ./docker/8.1/php.ini /etc/php/8.1/cli/conf.d/99-sail.ini
 # COPY php.ini /etc/php/8.1/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
 
-COPY . /var/www/html/
-RUN chown -R $WWWUSER:$WWWGROUP .
+COPY --chown=$WWWUSER:$WWWGROUP . /var/www/html/
+# RUN chown -R $WWWUSER:$WWWGROUP .
 
 # RUN php artisan storage:link
 

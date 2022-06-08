@@ -35,6 +35,7 @@ class EventUserController extends Controller
         $user = User::create([
             'id' => (string) Str::uuid(),
             'email' => $validatedAttributes['email'],
+            'ability' => 'seller'
         ]);
 
         return (new UserResource($user))
@@ -43,8 +44,7 @@ class EventUserController extends Controller
     }
     
     /**
-     * Events can have 1 manager.
-     * Sets the roles in the pivot table.
+     * Event can have 1 manager.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -59,7 +59,6 @@ class EventUserController extends Controller
     }
 
     /**
-     * Removes the roles from the pivot table.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

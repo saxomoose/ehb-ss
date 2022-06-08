@@ -33,15 +33,15 @@ class TenantDatabaseSeeder extends Seeder
         $centralAdmin = DB::connection(config('tenancy.database.central_connection'))
             ->table('users')
             ->first();
-        User::create([
+        User::factory()->createOne([
             'id' => (string) Str::uuid(),
             'email' => $adminEmail,
-            'is_admin' => true,
+            'ability' => 'admin',
         ]);
 
         // Everything hereunder to be commented out in production.
         $bankAccount = BankAccount::factory()->createOne();
-        $manager = User::factory()->createOne();
+        $manager = User::factory()->createOne(['ability' => 'manager']);
 
         // 1 manager and 1 seller per event
         $events = Event::factory(2)
@@ -70,7 +70,7 @@ class TenantDatabaseSeeder extends Seeder
         $flattenedItems = $items->flatten();
 
 
-        // 2 transactions per non-admin user with seller role (4). 5 items per transaction.
+        // 2 transactions per seller (4). 5 items per transaction.
         $resultSet = DB::table('users as u')
             ->join('event_user as eu', 'u.id', '=', 'eu.user_id')
             ->select('u.id')

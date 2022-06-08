@@ -15,7 +15,7 @@ class ItemPolicy
 
     public function before(User $user)
     {
-        if ($user->is_admin) {
+        if ($user->ability == 'admin') {
             return true;
         }
     }

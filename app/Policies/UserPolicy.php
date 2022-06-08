@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->is_admin || $user->managesAny();
+        return $user->ability == 'admin' || $user->ability == 'manager';
     }
 
     /**
@@ -30,12 +30,12 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        if (!$user->is_admin) {
+        if ($user->ability != 'admin') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');
         } else {
-            return $user->is_admin;
+            return $user->ability == 'admin';
         }
     }
 
@@ -60,16 +60,16 @@ class UserPolicy
     public function update(User $user, User $model)
     {
         
-        if ($model->is_admin) {
+        if ($model->ability == 'admin') {
             $this->deny('The admin user cannot be updated.');
         } 
         // A user is only allowed to update his own profile.
-        else if (!$user->is_admin) {
+        else if ($user->ability != 'admin') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');
         } else {
-            return $user->is_admin;
+            return $user->ability == 'admin';
         }
     }
 
@@ -111,28 +111,28 @@ class UserPolicy
 
     public function seedManager(User $user)
     {
-        return $user->is_admin || $user->managesAny();
+        return $user->ability == 'admin';
     }
 
     // Admin only.
     public function toggleIsActive(User $user, User $model)
     {
         // Only managers and sellers can be deactivated.
-        if ($model->is_admin) {
+        if ($model->ability == 'admin') {
             $this->deny("The admin user cannot be deactivated.");
         } else {
-            return $user->is_admin;
+            return $user->ability == 'admin';
         }
     }
 
     public function viewEvents(User $user, User $model)
     {
-        if (!$user->is_admin) {
+        if ($user->ability != 'admin') {
             return $user->id == $model->id
                 ? Response::allow()
                 : Response::deny('The user is only authorised to access his/her own record(s)');
         } else {
-            return $user->is_admin;
+            return $user->ability == 'admin';
         }
     }
 }

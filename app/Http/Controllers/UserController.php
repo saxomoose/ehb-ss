@@ -115,6 +115,7 @@ class UserController extends Controller
         $user = User::create([
             'id' => (string) Str::uuid(),
             'email' => $validatedAttributes['email'],
+            'ability' => 'manager'
         ]);
 
         return (new UserResource($user))

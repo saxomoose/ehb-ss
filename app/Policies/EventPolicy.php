@@ -13,7 +13,7 @@ class EventPolicy
 
     public function before(User $user)
     {
-        if ($user->is_admin) {
+        if ($user->ability == 'admin') {
             return true;
         }
     }
@@ -26,7 +26,7 @@ class EventPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->managesAny();
+        return $user->ability == 'manager';
     }
 
     /**
@@ -51,7 +51,7 @@ class EventPolicy
      */
     public function create(User $user)
     {
-        return $user->managesAny();
+        return $user->ability == 'manager';
     }
 
     /**

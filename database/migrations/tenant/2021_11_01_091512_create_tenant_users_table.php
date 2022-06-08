@@ -21,7 +21,7 @@ class CreateTenantUsersTable extends Migration
             $table->string('email')->unique();
             //$table->timestamp('email_verified_at')->nullable();
             $table->string('password')->default('placeholder');
-            $table->boolean('is_admin')->default(false);
+            $table->enum('ability', ['admin', 'manager', 'seller'])->default('seller');
             $table->tinyInteger('status')->default(0);
             //$table->rememberToken();
             $table->mediumInteger('pin_code', false, true)->nullable();

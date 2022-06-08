@@ -20,9 +20,8 @@ class EventUserController extends Controller
     public function seed(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'data' => 'required|array:email,ability',
+            'data' => 'required|array:email',
             'data.email' => ['required', 'email', Rule::unique('users', 'email'), 'max:255'],
-            'data.ability' => ['required', Rule::in(['manager', ''])]
         ]);
 
         if ($validator->fails()) {
@@ -37,7 +36,6 @@ class EventUserController extends Controller
         $user = User::create([
             'id' => (string) Str::uuid(),
             'email' => $validatedAttributes['email'],
-            'ability' => $validatedAttributes['ability']
         ]);
 
         return (new UserResource($user))
@@ -54,29 +52,11 @@ class EventUserController extends Controller
      */
     public function upsert(Request $request, Event $event, User $user)
     {
-        $validator = Validator::make($request->all(), [
-            'data' => 'required|array:ability',
-            'data.ability' => ['required', 'string', Rule::in(['manager', 'seller'])],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => 'Validation failed.'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $rawValidatedAttributes = $validator->validated();
-        $validatedAttributes = $rawValidatedAttributes['data'];
-
-        $manager = $event->getManager();
-        if (isset($manager) && $validatedAttributes['ability'] == 'manager') {
-            return response()->json(['error' => 'The event manager is already set'], Response::HTTP_FORBIDDEN);
-        }
-
         EventUser::updateOrCreate(
-            ['event_id' => $event->id, 'user_id' => $user->id],
-            ['ability' => $validatedAttributes['ability']]
+            ['event_id' => $event->id, 'user_id' => $user->id]
         );
 
-        return response()->json(['data' => "User {$user->name}'s role on event {$event->name} set to {$validatedAttributes['ability']}"], Response::HTTP_CREATED);
+        return response()->json(['data' => "User {$user->name}'s added to event {$event->name}"], Response::HTTP_CREATED);
     }
 
     /**

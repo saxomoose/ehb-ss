@@ -151,7 +151,7 @@ class EventActionsTest extends TenantTestCase
         DB::beginTransaction();
 
         $event = Event::inRandomOrder()->first();
-        $manager = $event->getManager();
+        $manager = $event->user;
         $user = User::factory()->createOne(['ability' => $ability]);
         
         if ($ability == 'manager') {
@@ -195,7 +195,7 @@ class EventActionsTest extends TenantTestCase
         DB::beginTransaction();
         
         $event = Event::inRandomOrder()->first();
-        $manager = $event->getManager();
+        $manager = $event->user;
         Sanctum::actingAs(
             $manager,
             ['']

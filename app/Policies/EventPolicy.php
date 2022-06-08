@@ -13,7 +13,7 @@ class EventPolicy
 
     public function before(User $user)
     {
-        if ($user->ability == 'admin') {
+        if ($user->is_admin) {
             return true;
         }
     }
@@ -26,7 +26,7 @@ class EventPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'manager';
+        return $user->is_admin;
     }
 
     /**
@@ -39,8 +39,8 @@ class EventPolicy
     public function view(User $user, Event $event)
     {
         return $user->isManager($event->id)
-        ? Response::allow()
-        : Response::deny('The user is not the manager of this event.');
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     /**
@@ -51,7 +51,7 @@ class EventPolicy
      */
     public function create(User $user)
     {
-        return $user->ability == 'manager';
+        return $user->is_admin;
     }
 
     /**
@@ -107,8 +107,8 @@ class EventPolicy
     public function viewCategories(User $user, Event $event)
     {
         return $user->isManager($event->id)
-        ? Response::allow()
-        : Response::deny('The user is not the manager of this event.');
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     public function viewTransactions(User $user, Event $event)

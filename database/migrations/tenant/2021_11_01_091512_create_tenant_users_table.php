@@ -21,10 +21,10 @@ class CreateTenantUsersTable extends Migration
             $table->string('email')->unique();
             //$table->timestamp('email_verified_at')->nullable();
             $table->string('password')->default('placeholder');
-            $table->boolean('status')->default(0);
-            $table->enum('ability', ['admin', 'manager', ''])->default('');
+            $table->boolean('is_admin')->default(false);
+            $table->tinyInteger('status')->default(0);
             //$table->rememberToken();
-            $table->integer('pin_code')->nullable();
+            $table->tinyInteger('pin_code')->nullable();
             $table->timestamp('pin_code_timestamp')->nullable();
             $table->timestamps();
         });

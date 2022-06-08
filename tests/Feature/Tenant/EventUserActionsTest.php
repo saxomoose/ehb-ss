@@ -48,7 +48,7 @@ class EventUserActionsTest extends TenantTestCase
         DB::beginTransaction();
 
         $event = Event::inRandomOrder()->first();
-        $manager = $event->getManager();
+        $manager = $event->user;
         $user = User::factory()->createOne(['ability' => $ability]);
         if ($role == 'manager') {
             Sanctum::actingAs(

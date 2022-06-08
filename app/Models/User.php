@@ -41,11 +41,17 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'status',
-        'ability',
+        'is_admin',
         'pin_code',
         'pin_code_timestamp'
     ];
 
+    // The events managed by the user.
+    public function managedEvents()
+    {
+        return $this->hasMany(Event::class);
+    }
+    
     // The events that belong to the user.
     public function events()
     {
@@ -67,21 +73,34 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
-    // Returns user role on a specific event.
-    public function getRole($eventId)
+    // Determines whether user is a seller at the event.
+    public function isSeller($eventId)
     {
-        return $this->roles->where('event_id', '=', $eventId)->first();
+        $eventIds = $this->roles->pluck('event_id');
+        if (isset($eventIds)) {
+            return $eventIds->contains($eventId);
+        } else {
+            false;
+        }
     }
-
-    // Determines whether user belongs to an event.
-    public function isMember($eventId)
-    {
-        return $this->events->pluck('id')->contains($eventId);
-    }
-
+    
     public function isManager($eventId)
     {
-        $rolesAsManager = $this->roles->where('ability', '=', 'manager');
-        return $rolesAsManager->pluck('event_id')->contains($eventId);
+        $eventIds = $this->managedEvents()->pluck('id');
+        if (isset($eventIds)) {
+            return $eventIds->contains($eventId);
+        } else {
+            false;
+        }
+    }
+
+    public function managesAny()
+    {
+        $userIds = $this->events->pluck('user_id');
+        if (isset($userIds)) {
+            return $userIds->contains($this->id);
+        } else {
+            false;
+        }
     }
 }

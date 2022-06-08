@@ -14,6 +14,12 @@ class Event extends Model
 
     protected $guarded = [];
 
+    // The manager of the event.
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
     // The bank account that belongs to the event.
     public function bankAccount()
     {
@@ -32,7 +38,6 @@ class Event extends Model
     }
 
     /**
-     * A role is an ability with respect to an event.
      * This method returns a collection of pivot model instances.
      * @return mixed
      */
@@ -47,18 +52,10 @@ class Event extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    // The users that belong to the event.
+    // The sellers that belong to the event.
     public function users()
     {
         return $this->belongsToMany(User::class)
-            ->using(EventUser::class)
-            ->withPivot('ability');
-    }
-
-    // Returns manager of a specific event.
-    public function getManager()
-    {
-        $userId = $this->roles->firstWhere('ability', '=', 'manager')->user_id;
-        return User::findOrFail($userId);
+            ->using(EventUser::class);
     }
 }

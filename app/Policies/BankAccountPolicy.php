@@ -12,7 +12,7 @@ class BankAccountPolicy
 
     public function before(User $user)
     {
-        if ($user->ability == 'admin') {
+        if ($user->is_admin) {
             return true;
         }
     }
@@ -25,7 +25,7 @@ class BankAccountPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'manager';
+        return $user->is_admin;
     }
 
     /**
@@ -48,7 +48,7 @@ class BankAccountPolicy
      */
     public function create(User $user)
     {
-        return $user->ability == 'manager';
+        return $user->is_admin;
     }
 
     /**

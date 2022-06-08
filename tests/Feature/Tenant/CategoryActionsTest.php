@@ -5,7 +5,7 @@ namespace Tests\Feature\Tenant;
 use App\Models\Category;
 use App\Models\Event;
 use App\Models\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
 use Tests\TenantTestCase;
 

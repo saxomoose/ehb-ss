@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\Fluent\AssertableJson;
-use Laravel\Sanctum\Http\Middleware\CheckForAnyAbility;
+use Laravel\Sanctum\Http\Middleware\CheckForAnypermission;
 use Laravel\Sanctum\Sanctum;
 use Tests\TenantTestCase;
 
@@ -19,12 +19,12 @@ class EventActionsTest extends TenantTestCase
 {
     use WithFaker;
 
-    public function getTopLevelAbilities()
+    public function getRoleAndPermission()
     {
         return [
-            'admin' => ['admin'],
-            'manager' => ['manager'],
-            '' => ['']
+            'admin' => ['admin', true],
+            'manager' => ['manager', false],
+            'seller' => ['seller', false]
         ];
     }
 
@@ -48,17 +48,18 @@ class EventActionsTest extends TenantTestCase
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getTopLevelAbilities
+     * @dataProvider getRoleAndPermission
      */
-    public function getEvents_WhenAdminOrManager_Returns200($ability)
+    public function getEvents_WhenAdminOrManager_Returns200($role, $permission)
     {
+        DB::beginTransaction();
+
         Sanctum::actingAs(
-            User::factory()->makeOne(['ability' => $ability]),['']
-        );
+            User::factory()->createOne(['is_admin' => $permission]),['']);
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/events");
 
-        if ($ability == 'admin' || $ability == 'manager') {
+        if ($role == 'admin' ) {
             $response->assertJson(
                 fn (AssertableJson $json) =>
                 $json->has(
@@ -68,37 +69,41 @@ class EventActionsTest extends TenantTestCase
                         ->etc()
                 )
             )->assertOk();
-        } else if ($ability == 'seller') {
+        } else if ($role == 'manager' || $role == 'seller') {
             $response->assertForbidden();
         }
+
+        DB::rollBack();
     }
 
     /**
      * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getTopLevelAbilities
+     * @dataProvider getRoleAndPermission
      */
-    public function postEvent_WithValidInput_Returns201($ability)
+    public function postEvent_WithValidInput_Returns201($role, $permission)
     {
+        DB::beginTransaction();
+
         Sanctum::actingAs(
-            User::factory()->makeOne(['ability' => $ability]),['']
+            User::factory()->createOne(['is_admin' => $permission]),['']
         );
 
         $event = Event::factory()
+            ->for(User::firstWhere('is_admin', false))
             ->for(BankAccount::first())
             ->makeOne();
-
-        DB::beginTransaction();
 
         $response = $this->postJson("{$this->domainWithScheme}/api/events", [
             'data' => [
                 'name' => $event->name,
                 'date' => $event->date,
+                'user_id' => $event->user_id,
                 'bank_account_id' => $event->bank_account_id,
             ]
         ]);
 
-        if ($ability == 'admin' || $ability == 'manager') {
+        if ($role == 'admin') {
             $response->assertJson(
                 fn (AssertableJson $json) =>
                 $json->has(
@@ -109,7 +114,7 @@ class EventActionsTest extends TenantTestCase
                 )
             )->assertCreated(); // Tests JSON response
             $this->assertDatabaseHas('events', ['name' => $event->name]); // Tests database write.
-        } else if ($ability == 'seller') {
+        } else if ($role == 'manager' || $role == 'seller') {
             $response->assertForbidden();
             $this->assertDatabaseMissing('events', ['name' => $event->name]);
         }
@@ -142,19 +147,18 @@ class EventActionsTest extends TenantTestCase
     }
 
     /**
-     * @test
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getTopLevelAbilities
+     * @dataProvider getPermission
      */
-    public function getEvent_WhenAdminOrManager_Returns200($ability)
+    public function getEvent_WhenAdminOrManager_Returns200($permission)
     {
         DB::beginTransaction();
 
         $event = Event::inRandomOrder()->first();
         $manager = $event->user;
-        $user = User::factory()->createOne(['ability' => $ability]);
+        $user = User::factory()->createOne(['permission' => $permission]);
         
-        if ($ability == 'manager') {
+        if ($permission == 'manager') {
             Sanctum::actingAs(
                 $manager,
                 ['']
@@ -168,7 +172,7 @@ class EventActionsTest extends TenantTestCase
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/events/{$event->id}");
 
-        if ($ability == 'admin' || $ability == 'manager') {
+        if ($permission == 'admin' || $permission == 'manager') {
             $response->assertJson(
                 fn (AssertableJson $json) =>
                 $json->has(
@@ -178,7 +182,7 @@ class EventActionsTest extends TenantTestCase
                         ->etc()
                 )
             )->assertOk();
-        } else if ($ability == 'seller') {
+        } else if ($permission == 'seller') {
             $response->assertForbidden();
         }
 
@@ -187,7 +191,7 @@ class EventActionsTest extends TenantTestCase
 
     /**
      * @test
-     * Test with user with ability manager.
+     * Test with user with permission manager.
      * @covers \App\Http\Controllers\EventController
      */
     public function patchEvent_WithPassingValidation_Returns200()
@@ -208,6 +212,7 @@ class EventActionsTest extends TenantTestCase
             'data' => [
                 'name' => $updatedName,
                 'date' => $updatedDate,
+                'user_id' => $event->user_id,
                 'bank_account_id' => $event->bank_account_id
             ]
         ]);
@@ -225,32 +230,33 @@ class EventActionsTest extends TenantTestCase
             )
         )->assertOk();
         $this->assertEquals($updatedName, $updatedEvent->name);
+        $this->assertEquals($updatedDate, $updatedEvent->date);
 
         DB::rollBack();
     }
 
     /**
      * @covers \App\Http\Controllers\EventController
-     * @dataProvider getTopLevelAbilities
+     * @dataProvider getPermission
      */
-    public function deleteEvent_WhenAdmin_Returns204($ability)
+    public function deleteEvent_WhenAdmin_Returns204($permission)
     {
         Sanctum::actingAs(
             User::factory()->makeOne(),
-            ["{$ability}"]
+            ["{$permission}"]
         );
         $event = Event::inRandomOrder()->first();
 
         DB::beginTransaction();
         $response = $this->deleteJson("{$this->domainWithScheme}/api/events/{$event->id}");
 
-        if ($ability == 'admin') {
+        if ($permission == 'admin') {
             $response->assertNoContent();
             $this->assertDeleted($event);
-        } else if ($ability == 'manager') {
+        } else if ($permission == 'manager') {
             $response->assertForbidden();
             $this->assertDatabaseHas('events', ['id' => $event->id]);
-        } else if ($ability == 'seller') {
+        } else if ($permission == 'seller') {
             $response->assertForbidden();
             $this->assertDatabaseHas('events', ['id' => $event->id]);
         }

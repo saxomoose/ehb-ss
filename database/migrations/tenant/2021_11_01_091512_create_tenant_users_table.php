@@ -24,7 +24,7 @@ class CreateTenantUsersTable extends Migration
             $table->boolean('is_admin')->default(false);
             $table->tinyInteger('status')->default(0);
             //$table->rememberToken();
-            $table->tinyInteger('pin_code')->nullable();
+            $table->mediumInteger('pin_code', false, true)->nullable();
             $table->timestamp('pin_code_timestamp')->nullable();
             $table->timestamps();
         });

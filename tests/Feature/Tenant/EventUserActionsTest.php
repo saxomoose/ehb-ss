@@ -10,12 +10,12 @@ use Tests\TenantTestCase;
 
 class EventUserActionsTest extends TenantTestCase
 {
-    public function getRoles()
+    public function getRole()
     {
         return [
-            'admin' => ['admin', ''],
-            'manager' => ['manager', 'manager'],
-            'seller' => ['', 'seller']
+            'admin' => ['admin'],
+            'manager' => ['manager'],
+            'seller' => ['seller']
         ];
     }
 
@@ -24,7 +24,7 @@ class EventUserActionsTest extends TenantTestCase
     public function seed_WhenUserIsManager_Returns201()
     {
         Sanctum::actingAs(
-            User::factory()->makeOne(['ability' => 'manager']),
+            User::factory()->makeOne(['role' => 'manager']),
             []
         );
 
@@ -32,7 +32,7 @@ class EventUserActionsTest extends TenantTestCase
         $response = $this->postJson("{$this->domainWithScheme}/api/users", [
             'data' => [
                 'email' => $this->faker->email(),
-                'ability' => 'coordinator'
+                'role' => 'coordinator'
             ]
         ]);
 
@@ -41,48 +41,46 @@ class EventUserActionsTest extends TenantTestCase
 
     /**
      * @test
-     * @dataProvider getRoles
+     * @dataProvider getRole
      */
-    public function upsert_WithValidInput_Returns201($ability, $role)
+    public function upsert_WithValidInput_Returns201($role)
     {
         DB::beginTransaction();
 
         $event = Event::inRandomOrder()->first();
         $manager = $event->user;
-        $user = User::factory()->createOne(['ability' => $ability]);
-        if ($role == 'manager') {
+        if ($role == 'admin') {
+            Sanctum::actingAs(
+                User::firstWhere('is_admin', true),
+                ['']
+            );
+        } else if ($role == 'manager') {
             Sanctum::actingAs(
                 $manager,
                 ['']
             );
-        } else {
+        } else if ($role == 'seller') {
             Sanctum::actingAs(
-                $user,
+                User::firstWhere('is_admin', false),
                 ['']
             );
         }
 
         $userModel = User::factory()->createOne();
 
-        $response = $this->putJson("{$this->domainWithScheme}/api/events/{$event->id}/users/{$userModel->id}", [
-            'data' => [
-                'ability' => 'seller'
-            ]
-        ]);
+        $response = $this->putJson("{$this->domainWithScheme}/api/events/{$event->id}/users/{$userModel->id}");
 
-        if ($ability == 'admin' || $role == 'manager') {
+        if ($role == 'admin' || $role == 'manager') {
             $response->assertCreated();
             $this->assertDatabaseHas('event_user', [
                 'event_id' => $event->id,
                 'user_id' => $userModel->id,
-                'ability' => 'seller'
             ]);
         } else if ($role == 'seller') {
             $response->assertForbidden();
             $this->assertDatabaseMissing('event_user', [
                 'event_id' => $event->id,
                 'user_id' => $userModel->id,
-                'ability' => 'seller'
             ]);
         }
 

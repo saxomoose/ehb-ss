@@ -32,7 +32,7 @@ class BankAccount extends Model
     public function isManagedBy($userId) {
         $managers = $this->getManagers();
         if (isset($managers)) {
-            $managers->pluck('id')->contains($userId);
+            return $managers->pluck('id')->contains($userId);
         } else {
             return false;
         }

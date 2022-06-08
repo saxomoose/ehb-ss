@@ -80,7 +80,7 @@ class User extends Authenticatable
         if (isset($eventIds)) {
             return $eventIds->contains($eventId);
         } else {
-            false;
+            return false;
         }
     }
     
@@ -90,7 +90,7 @@ class User extends Authenticatable
         if (isset($eventIds)) {
             return $eventIds->contains($eventId);
         } else {
-            false;
+            return false;
         }
     }
 
@@ -100,7 +100,7 @@ class User extends Authenticatable
         if (isset($userIds)) {
             return $userIds->contains($this->id);
         } else {
-            false;
+            return false;
         }
     }
 }

@@ -25,7 +25,7 @@ class BankAccountPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->managesAny();
     }
 
     /**
@@ -48,7 +48,7 @@ class BankAccountPolicy
      */
     public function create(User $user)
     {
-        //
+        // Admin only
     }
 
     /**
@@ -60,7 +60,7 @@ class BankAccountPolicy
      */
     public function update(User $user, BankAccount $bankAccount)
     {
-        return $bankAccount->isManagedBy($user->id);
+        // Admin only
     }
 
     /**

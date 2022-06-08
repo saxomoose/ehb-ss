@@ -45,8 +45,8 @@ class TenantDatabaseSeeder extends Seeder
 
         // 1 manager and 1 seller per event
         $events = Event::factory(2)
+            ->for($manager)    
             ->for($bankAccount)
-            ->for($manager)
             ->hasAttached(User::factory()->count(1))
             ->create();
 

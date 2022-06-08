@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->is_admin;
+        return $user->is_admin || $user->managesAny();
     }
 
     /**
@@ -109,6 +109,12 @@ class UserPolicy
         //
     }
 
+    public function seedManager(User $user)
+    {
+        return $user->is_admin || $user->managesAny();
+    }
+
+    // Admin only.
     public function toggleIsActive(User $user, User $model)
     {
         // Only managers and sellers can be deactivated.

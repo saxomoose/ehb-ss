@@ -1,0 +1,9 @@
+runtime: php74
+
+env_variables:
+  GCP_APP_ENGINE_LARAVEL: true
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always

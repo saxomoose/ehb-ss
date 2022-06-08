@@ -1,0 +1,16 @@
+_ide_helper.php
+.devcontainer
+.dockerignore
+.editorconfig
+.env.example
+.gcloudignore
+.git
+.gitattributes
+.gitignore
+.styleci.yml
+.vscode
+app.yaml
+app.yml
+docker-compose.yml
+html-coverage
+README.md

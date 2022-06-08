@@ -10,15 +10,6 @@ use Tests\TenantTestCase;
 
 class BankAccountActionsTest extends TenantTestCase
 {
-    public function getTopLevelAbilities()
-    {
-        return [
-            'admin' => ['admin'],
-            'manager' => ['manager'],
-            'seller' => ['']
-        ];
-    }
-
     /**
      * @test
      * @covers \App\Http\Controllers\BankAccountController

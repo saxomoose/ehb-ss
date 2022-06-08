@@ -23,13 +23,18 @@ class BankAccount extends Model
     {
         $managers = collect();
         foreach($this->events as $event) {
-            $managers->push($event->getManager());
+            $managers->push($event->user);
         }
         return $managers;
     }
 
-
+    // Multiple managers might manage a bank acccount.
     public function isManagedBy($userId) {
-        return $this->getManagers()->pluck('id')->contains($userId);
+        $managers = $this->getManagers();
+        if (isset($managers)) {
+            return $managers->pluck('id')->contains($userId);
+        } else {
+            return false;
+        }
     }
 }

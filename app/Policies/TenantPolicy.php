@@ -12,7 +12,7 @@ class TenantPolicy
 
     public function before(User $user)
     {
-        if ($user->ability == 'admin') {
+        if ($user->is_admin) {
             return true;
         }
     }

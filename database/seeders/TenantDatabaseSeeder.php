@@ -36,17 +36,18 @@ class TenantDatabaseSeeder extends Seeder
         User::create([
             'id' => (string) Str::uuid(),
             'email' => $adminEmail,
-            'ability' => 'admin',
+            'is_admin' => true,
         ]);
 
         // Everything hereunder to be commented out in production.
-        $bankAccount = BankAccount::factory()->create();
+        $bankAccount = BankAccount::factory()->createOne();
+        $manager = User::factory()->createOne();
 
         // 1 manager and 1 seller per event
         $events = Event::factory(2)
             ->for($bankAccount)
-            ->hasAttached(User::factory()->count(1), ['ability' => 'manager'])
-            ->hasAttached(User::factory()->count(1), ['ability' => 'seller'])
+            ->for($manager)
+            ->hasAttached(User::factory()->count(1))
             ->create();
 
         // 2 item categories per event (4)
@@ -72,8 +73,6 @@ class TenantDatabaseSeeder extends Seeder
         // 2 transactions per non-admin user with seller role (4). 5 items per transaction.
         $resultSet = DB::table('users as u')
             ->join('event_user as eu', 'u.id', '=', 'eu.user_id')
-            ->where('u.email', '!=', 'admin@' . "{$tenantName}" . '.' . config('tenancy.central_domains.0'))
-            ->where('eu.ability', '=', 'seller')
             ->select('u.id')
             ->get();
         $users = collect();

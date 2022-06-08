@@ -13,29 +13,31 @@ class UserActionsTest extends TenantTestCase
 {
     use WithFaker;
 
-    public function getTopLevelAbilities()
+    public function getPermission()
     {
         return [
-            'admin' => ['admin'],
-            'manager' => ['manager'],
-            'seller' => ['']
+            'admin' => [true],
+            'manager' => [false],
+            'seller' => [false]
         ];
     }
 
     /**
      * @test
      * @covers \App\Http\Controllers\UserController
-     * @dataProvider getTopLevelAbilities
+     * @dataProvider getPermission
      */
-    public function getUsers_WhenAdmin_Returns200($ability)
+    public function getUsers_WhenAdmin_Returns200($permission)
     {
+        DB::beginTransaction();
+
         Sanctum::actingAs(
-            User::factory()->makeOne(['ability' => $ability]),['']
+            User::factory()->createOne(['is_admin' => $permission]),['']
         );
 
         $response = $this->json('GET', "{$this->domainWithScheme}/api/users");
 
-        if ($ability == 'admin') {
+        if ($permission) {
             $response->assertJson(
                 fn (AssertableJson $json) =>
                 $json->has(
@@ -45,8 +47,10 @@ class UserActionsTest extends TenantTestCase
                         ->etc()
                 )
             )->assertOk();
-        } else if ($ability == 'manager' || $ability == '') {
+        } else if (!$permission) {
             $response->assertForbidden();
         }
+
+        DB::rollBack();
     }
 }

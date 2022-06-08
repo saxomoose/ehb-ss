@@ -15,7 +15,7 @@ class ItemPolicy
 
     public function before(User $user)
     {
-        if ($user->ability == 'admin') {
+        if ($user->is_admin) {
             return true;
         }
     }
@@ -28,7 +28,7 @@ class ItemPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'manager';
+        //
     }
 
     /**

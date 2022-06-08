@@ -12,6 +12,13 @@ class TransactionPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user)
+    {
+        if ($user->is_admin) {
+            return true;
+        }
+    }
+    
     /**
      * Determine whether the user can view any models.
      *
@@ -20,7 +27,7 @@ class TransactionPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'manager';
+        //
     }
 
     /**
@@ -33,15 +40,12 @@ class TransactionPolicy
     public function view(User $user, Transaction $transaction)
     {
         $event = Event::findOrFail($transaction->event_id);
-        $role = $user->getRole($event->id);
-
-        if (!isset($role)) {
-            $this->deny('The user does not belong to this event.');
-        } else if ($role == 'seller') {
+        
+        if ($user->isSeller($event->id)) {
             return $user->id == $transaction->user_id
-                ? Response::allow()
-                : Response::deny('The user is only authorised to access his/her own record(s)');
-        } else if ($role == 'manager') {
+            ? Response::allow()
+            : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else if ($user->isManager($event->id)) {
             $this->allow();
         }
     }
@@ -54,11 +58,10 @@ class TransactionPolicy
      */
     public function create(User $user, Event $event)
     {
-        $role = $user->getRole($event->id);
-        if (!isset($role)) {
-            $this->deny('The user does not belong to this event.');
-        } else if ($role == 'seller' || $role == 'manager') {
+        if ($user->isSeller($event->id || $user->isManager($event->id))) {
             $this->allow();
+        } else {
+            $this->deny('The user does not belong to this event.');
         }
     }
 
@@ -113,15 +116,12 @@ class TransactionPolicy
     public function viewItems(User $user, Transaction $transaction)
     {
         $event = Event::findOrFail($transaction->event_id);
-        $role = $user->getRole($event->id);
-
-        if (!isset($role)) {
-            $this->deny('The user does not belong to this event.');
-        } else if ($role == 'seller') {
+        
+        if ($user->isSeller($event->id)) {
             return $user->id == $transaction->user_id
-                ? Response::allow()
-                : Response::deny('The user is only authorised to access his/her own record(s)');
-        } else if ($role == 'manager') {
+            ? Response::allow()
+            : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else if ($user->isManager($event->id)) {
             $this->allow();
         }
     }

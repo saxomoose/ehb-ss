@@ -14,7 +14,7 @@ class EventUserPolicy
 
     public function before(User $user)
     {
-        if ($user->ability == 'admin') {
+        if ($user->is_admin) {
             return true;
         }
     }
@@ -118,16 +118,12 @@ class EventUserPolicy
     }
 
     public function viewTransactions(User $user, Event $event, User $model)
-    {
-        $role = $user->getRole($event->id);
-
-        if (!isset($role)) {
-            $this->deny('The user does not belong to this event.');
-        } else if ($role == 'seller') {
+    {        
+        if ($user->isSeller($event->id)) {
             return $user->id == $model->id
-                ? Response::allow()
-                : Response::deny('The user is only authorised to access his/her own record(s)');
-        } else if ($role == 'manager') {
+            ? Response::allow()
+            : Response::deny('The user is only authorised to access his/her own record(s)');
+        } else if ($user->isManager($event->id)) {
             $this->allow();
         }
     }

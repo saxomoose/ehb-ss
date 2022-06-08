@@ -14,7 +14,7 @@ class CategoryPolicy
 
     public function before(User $user)
     {
-        if ($user->ability == 'admin') {
+        if ($user->is_admin) {
             return true;
         }
     }
@@ -28,7 +28,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'manager';
+        //
     }
 
     /**
@@ -40,12 +40,6 @@ class CategoryPolicy
      */
     public function view(User $user, Category $category)
     {
-        // $eventId = $category->event_id;
-        // $isMember = $user->getRole($eventId);
-
-        // return isset($isMember) && $user->ability == 'manager'
-        //     ? Response::allow()
-        //     : Response::deny('The user does not belong to this event.');
         $event = Event::findOrFail($category->event_id);
 
         return $user->isManager($event->id)

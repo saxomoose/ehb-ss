@@ -113,16 +113,16 @@ class EventUserPolicy
     public function seedSeller(User $user, Event $event)
     {
         return $user->isManager($event->id)
-        ? Response::allow()
-        : Response::deny('The user is not the manager of this event.');
+            ? Response::allow()
+            : Response::deny('The user is not the manager of this event.');
     }
 
     public function viewTransactions(User $user, Event $event, User $model)
     {        
         if ($user->isSeller($event->id)) {
             return $user->id == $model->id
-            ? Response::allow()
-            : Response::deny('The user is only authorised to access his/her own record(s)');
+                ? Response::allow()
+                : Response::deny('The user is only authorised to access his/her own record(s)');
         } else if ($user->isManager($event->id)) {
             $this->allow();
         }

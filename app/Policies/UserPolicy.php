@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->ability == 'admin' || $user->ability == 'manager';
+        return $user->ability == 'admin';
     }
 
     /**

@@ -41,7 +41,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'status',
-        'is_admin',
+        'ability',
         'pin_code',
         'pin_code_timestamp'
     ];

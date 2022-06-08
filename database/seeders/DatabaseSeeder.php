@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $user = User::create([
             'id' => (string) Str::uuid(),
             'email' => 'mathieu.developer@protonmail.com',
-            'is_admin' => true
+            'ability' => 'admin'
         ]);
 
         User::setEventDispatcher($dispatcher);

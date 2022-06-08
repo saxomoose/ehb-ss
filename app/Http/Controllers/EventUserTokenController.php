@@ -26,7 +26,6 @@ class EventUserTokenController extends Controller
         }
     }
 
-    // An role (eventuser) token is created per event to which the user belongs. Should be called on every app start-up.
     public function sync(Request $request)
     {
         $validator = Validator::make($request->all(), [

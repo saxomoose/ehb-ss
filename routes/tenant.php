@@ -79,9 +79,6 @@ Route::prefix(
     'api',
     'auth:sanctum'
 ])->group(function () {
-    // This route is used to sync the user's role tokens between the server and the client.
-    // Route::post('token/sync', [EventUserTokenController::class, 'sync']);
-
     Route::post('users', [UserController::class, 'seedManager'])->can('seedManager', User::class);
     // This route is to activate or deactivate a user. The user's token is revoked upon deactivation.
     Route::put('users/{user}', [UserController::class, 'toggleIsActive'])->can('toggleIsActive', 'user');
@@ -141,9 +138,6 @@ Route::prefix(
 
     // This route is used to access the user transactions.
     // Route::get('users/{user}/transactions', [UserController::class, 'transactions'])->middleware('ability:admin,manager,seller');
-
-    // This route should be visited prior to a sync with all the role tokens possessed by the client. 
-    // Route::post('token/purge', [EventUserTokenController::class, 'purge']);
 });
 
 

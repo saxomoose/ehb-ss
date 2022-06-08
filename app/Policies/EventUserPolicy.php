@@ -110,7 +110,7 @@ class EventUserPolicy
         //
     }
 
-    public function seed(User $user, Event $event)
+    public function seedSeller(User $user, Event $event)
     {
         return $user->isManager($event->id)
         ? Response::allow()

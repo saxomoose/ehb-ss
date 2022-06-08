@@ -26,7 +26,7 @@ class EventPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->managesAny();
     }
 
     /**
@@ -51,7 +51,7 @@ class EventPolicy
      */
     public function create(User $user)
     {
-        //
+        return $user->managesAny();
     }
 
     /**

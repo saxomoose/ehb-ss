@@ -82,6 +82,7 @@ Route::prefix(
     // This route is used to sync the user's role tokens between the server and the client.
     // Route::post('token/sync', [EventUserTokenController::class, 'sync']);
 
+    Route::post('users', [UserController::class, 'seedManager'])->can('seedManager', User::class);
     // This route is to activate or deactivate a user. The user's token is revoked upon deactivation.
     Route::put('users/{user}', [UserController::class, 'toggleIsActive'])->can('toggleIsActive', 'user');
     // This route is used to access the user events.
@@ -105,8 +106,7 @@ Route::prefix(
     Route::patch('bankaccounts/{bankAccount}', [BankAccountController::class, 'update'])->can('update', 'bankAccount');
     Route::delete('bankaccounts/{bankAccount}', [BankAccountController::class, 'destroy'])->can('delete', 'bankAccount');
 
-    // There routes are used to upsert and delete roles on the pivot table.
-    Route::post('events/{event}/users', [EventUserController::class, 'seed'])->can('seed', [EventUser::class, 'event']);
+    Route::post('events/{event}/users', [EventUserController::class, 'seedSeller'])->can('seedSeller', EventUser::class);
     Route::put('events/{event}/users/{user}', [EventUserController::class, 'upsert'])->can('upsert', [EventUser::class, 'event']);
     Route::delete('events/{event}/users/{user}', [EventUserController::class, 'destroy'])->can('delete', [EventUser::class, 'event']); // Detach is within scope of manager.
     // This route is used to access the user transactions executed during an event.

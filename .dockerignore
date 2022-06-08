@@ -1,0 +1,13 @@
+_ide_helper.php
+.devcontainer
+.dockerignore
+.editorconfig
+.gcloudignore
+.git
+.gitattributes
+.gitignore
+.styleci.yml
+.vscode
+app.yml
+docker-compose.yml
+html-coverage

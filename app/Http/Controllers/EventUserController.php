@@ -15,9 +15,8 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class EventUserController extends Controller
-{
-    // Seeds the email of a user in the db. The email existence is tested during registration. Admin is able to seed manager, ''. Manager is only able to seed ''.
-    public function seed(Request $request)
+{    
+    public function seedSeller(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'data' => 'required|array:email',

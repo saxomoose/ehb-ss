@@ -96,7 +96,31 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    
+    public function seedManager(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'data' => 'required|array:email',
+            'data.email' => ['required', 'email', Rule::unique('users', 'email'), 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation failed.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $validatedAttributes = $validator->validated();
+
+        $rawValidatedAttributes = $validator->validated();
+        $validatedAttributes = $rawValidatedAttributes['data'];
+
+        $user = User::create([
+            'id' => (string) Str::uuid(),
+            'email' => $validatedAttributes['email'],
+        ]);
+
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(Response::HTTP_CREATED);
+    }
 
     public function toggleIsActive(User $user)
     {

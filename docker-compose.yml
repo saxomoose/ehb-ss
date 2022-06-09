@@ -46,6 +46,7 @@ services:
             # context: ./docker/8.1
             # dockerfile: Dockerfile
             args:
+                WWWUSER: "${WWWUSER}"
                 WWWGROUP: "${WWWGROUP}"
         image: sail-8.1/hexclan
         extra_hosts:

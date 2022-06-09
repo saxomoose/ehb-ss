@@ -62,7 +62,7 @@ class PINCodeController extends Controller
     public function confirm(Request $request)
     {
         $message = $request->query();
-        return view('pincode.confirm-activation', $message);
+        return view('pincode.message', $message);
     }
     
     public function reset(User $user)

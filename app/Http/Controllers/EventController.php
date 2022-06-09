@@ -7,6 +7,7 @@ use App\Http\Resources\EventResource;
 use App\Http\Resources\TransactionResource;
 use App\Http\Resources\UserResource;
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,7 @@ class EventController extends Controller
     }
 
     /**
+     * Event can have 1 manager.
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -52,6 +54,12 @@ class EventController extends Controller
 
         $rawValidatedAttributes = $validator->validated();
         $validatedAttributes = $rawValidatedAttributes['data'];
+
+        $user = User::findOrFail($validatedAttributes['user_id']);
+        if ($user->ability != 'manager') {
+            
+            return response()->json(['data' => "Only managers can manage events."], Response::HTTP_FORBIDDEN);
+        }
 
         $event = Event::create([
             'name' => $validatedAttributes['name'],
@@ -100,6 +108,12 @@ class EventController extends Controller
 
         $rawValidatedAttributes = $validator->validated();
         $validatedAttributes = $rawValidatedAttributes['data'];
+
+        $user = User::findOrFail($validatedAttributes['user_id']);
+        if ($user->ability != 'manager') {
+            
+            return response()->json(['data' => "Only managers can manage events."], Response::HTTP_FORBIDDEN);
+        }
 
         $originalAttributes = collect($event->getAttributes())->only(array_keys($validatedAttributes));
         $changedAttributes = collect($validatedAttributes);

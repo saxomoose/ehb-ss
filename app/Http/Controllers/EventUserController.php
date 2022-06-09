@@ -44,13 +44,17 @@ class EventUserController extends Controller
     }
     
     /**
-     * Event can have 1 manager.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function upsert(Request $request, Event $event, User $user)
     {
+        if ($user->ability != 'seller') {
+            
+            return response()->json(['data' => "Only sellers can be added to events."], Response::HTTP_FORBIDDEN);
+        }
+        
         EventUser::updateOrCreate(
             ['event_id' => $event->id, 'user_id' => $user->id]
         );

@@ -44,7 +44,7 @@ class TransactionPolicy
         if ($user->isSeller($event->id)) {
             return $user->id == $transaction->user_id
             ? Response::allow()
-            : Response::deny('The user is only authorised to access his/her own record(s)');
+            : Response::deny('The user is only authorized to access his/her own record(s)');
         } else if ($user->isManager($event->id)) {
             $this->allow();
         }
@@ -120,7 +120,7 @@ class TransactionPolicy
         if ($user->isSeller($event->id)) {
             return $user->id == $transaction->user_id
             ? Response::allow()
-            : Response::deny('The user is only authorised to access his/her own record(s)');
+            : Response::deny('The user is only authorized to access his/her own record(s)');
         } else if ($user->isManager($event->id)) {
             $this->allow();
         }
@@ -132,6 +132,6 @@ class TransactionPolicy
 
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 }

@@ -23,7 +23,7 @@ class RestrictToAccountableUser
         $userId = $request->user()->id;
 
         if ($request->user()->tokenCan('manager') && $userId != $paramUserId) {
-            return response()->json(['error' => 'The user is only authorised to access the record(s) for which he/she is accountable'], Response::HTTP_FORBIDDEN);
+            return response()->json(['error' => 'The user is only authorized to access the record(s) for which he/she is accountable'], Response::HTTP_FORBIDDEN);
         }
 
         return $next($request);

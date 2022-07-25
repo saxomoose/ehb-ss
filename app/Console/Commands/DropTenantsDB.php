@@ -40,8 +40,8 @@ class DropTenantsDB extends Command
     public function handle()
     {
         $env = App::environment();
-        config(['database.connections.mysql.database' => 'hexclan']);
-        DB::connection('mysql')->setDatabaseName('hexclan');
+        config(['database.connections.mysql.database' => 'backend']);
+        DB::connection('mysql')->setDatabaseName('backend');
         DB::reconnect();
 
         if ($env == 'testing') {

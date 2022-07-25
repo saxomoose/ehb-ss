@@ -14,7 +14,7 @@ use Tests\CreatesApplication;
 
 Artisan::call('config:cache');
 Artisan::call('custom:drop'); // Clean-up in case of interrupted tests.
-DB::statement('CREATE DATABASE hexclan_test');
+DB::statement('CREATE DATABASE backend_test');
 Artisan::call('migrate:fresh --seed');
 Artisan::call('tenants:seed');
 $tenant = Tenant::with('domains')->first();

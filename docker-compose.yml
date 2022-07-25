@@ -48,7 +48,7 @@ services:
             args:
                 WWWUSER: "${WWWUSER}"
                 WWWGROUP: "${WWWGROUP}"
-        image: sail-8.1/hexclan
+        image: sail-8.1/backend
         extra_hosts:
             - "host.docker.internal:host-gateway"
         ports:

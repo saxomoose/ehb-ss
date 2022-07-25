@@ -49,7 +49,7 @@ class PINCodeNotification extends Notification
                         'pinCode' => $this->pinCode,
                         'userId' => $this->userId
                     ])
-                    ->subject('Hexclan - Activate your account');
+                    ->subject('backend - Activate your account');
     }
 
     /**

@@ -44,7 +44,7 @@ class CategoryPolicy
 
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 
     /**
@@ -57,7 +57,7 @@ class CategoryPolicy
     {
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 
     /**
@@ -73,7 +73,7 @@ class CategoryPolicy
 
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 
     /**
@@ -118,6 +118,6 @@ class CategoryPolicy
 
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 }

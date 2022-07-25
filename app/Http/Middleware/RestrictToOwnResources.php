@@ -23,7 +23,7 @@ class RestrictToOwnResources
         $paramUserId =  $model->user_id ?? $model->id; // Order is important.
         $userId = $request->user()->user_id ?? $request->user()->id; // Order is important.
         if ($request->user()->tokenCan('seller') && $paramUserId != $userId) {
-            return response()->json(['error' => 'The user is only authorised to access his/her own record(s)'], Response::HTTP_FORBIDDEN);
+            return response()->json(['error' => 'The user is only authorized to access his/her own record(s)'], Response::HTTP_FORBIDDEN);
         }
 
         return $next($request);

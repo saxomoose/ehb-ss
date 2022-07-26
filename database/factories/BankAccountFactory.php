@@ -26,7 +26,6 @@ class BankAccountFactory extends Factory
         $name = tenant()->name;
 
         return [
-            //'id' => $this->faker->uuid(),
             'beneficiary_name' => $name,
             'bic' => $this->faker->swiftBicNumber(),
             'iban' => $this->faker->iban('BE', '', 16),

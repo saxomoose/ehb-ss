@@ -9,9 +9,6 @@ class Event extends Model
 {
     use HasFactory;
 
-    // Required because primary key is uuid.
-    //public $incrementing = false;
-
     protected $guarded = [];
 
     // The manager of the event.

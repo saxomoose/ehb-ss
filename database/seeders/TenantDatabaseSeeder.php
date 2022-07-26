@@ -34,7 +34,6 @@ class TenantDatabaseSeeder extends Seeder
             ->table('users')
             ->first();
         User::factory()->createOne([
-            'id' => (string) Str::uuid(),
             'email' => $adminEmail,
             'ability' => 'admin',
         ]);

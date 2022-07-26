@@ -17,7 +17,7 @@ class Item extends Model
         'price' => PriceCast::class
     ];
 
-    protected $appends = ['event_id'];
+    // protected $appends = ['event_id'];
 
     // The category to which the item belongs.
     public function category()

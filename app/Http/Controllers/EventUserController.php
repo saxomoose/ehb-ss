@@ -33,7 +33,6 @@ class EventUserController extends Controller
         $validatedAttributes = $rawValidatedAttributes['data'];
 
         $user = User::create([
-            'id' => (string) Str::uuid(),
             'email' => $validatedAttributes['email'],
             'ability' => 'seller'
         ]);

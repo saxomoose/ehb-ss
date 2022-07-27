@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\BankAccount;
 use App\Models\Category;
 use App\Models\Event;
+use App\Models\EventUser;
 use App\Models\Item;
 use App\Models\Tenant;
 use App\Models\Transaction;
@@ -27,14 +28,14 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        BankAccount::class => BankAccountPolicy::class,
-        Category::class => CategoryPolicy::class,
-        Event::class => EventPolicy::class,
-        EventUser::class => EventUserPolicy::class,
-        Item::class => ItemPolicy::class,
-        Tenant::class => TenantPolicy::class,
-        Transaction::class => TransactionPolicy::class,
-        User::class => UserPolicy::class
+        // BankAccount::class => BankAccountPolicy::class,
+        // Category::class => CategoryPolicy::class,
+        // Event::class => EventPolicy::class,
+        // EventUser::class => EventUserPolicy::class,
+        // Item::class => ItemPolicy::class,
+        // Tenant::class => TenantPolicy::class,
+        // Transaction::class => TransactionPolicy::class,
+        // User::class => UserPolicy::class
     ];
 
     /**
@@ -45,7 +46,5 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        //
     }
 }

@@ -43,13 +43,15 @@ class LoginController extends Controller
             return response()->json(['error' => 'The provided credentials are incorrect'], Response::HTTP_UNAUTHORIZED);
         }
 
+        if ($user->status == 0 && isset($user->pin_code)) {
+            return response()->json(['error' => 'An email with an activation link was sent to your mailbox. Please follow the instructions in the email.'], Response::HTTP_FORBIDDEN);
+        } 
         // User is active. The user token for the user is created.
-        if ($user->status == 1 && $user->tokens->isEmpty()) {
+        else if ($user->status == 1 && $user->tokens->isEmpty()) {
             $token = $user->createToken($validatedAttributes['device_name'], []);
 
             return response()->json(['data' => $token->plainTextToken], Response::HTTP_OK);
         } else {
-            
             return response()->json(['error' => 'The user token is already set.'], Response::HTTP_FORBIDDEN);
         }
     }

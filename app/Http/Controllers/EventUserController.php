@@ -11,13 +11,16 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class EventUserController extends Controller
 {    
     public function seedSeller(Request $request)
     {
+        $eventId = $request->route()->parameter('event');
+        $event = Event::findOrFail($eventId);
+        $this->authorize('seedSeller', $event);
+
         $validator = Validator::make($request->all(), [
             'data' => 'required|array:email',
             'data.email' => ['required', 'email', Rule::unique('users', 'email'), 'max:255'],
@@ -47,8 +50,10 @@ class EventUserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function upsert(Request $request, Event $event, User $user)
+    public function upsert(Event $event, User $user)
     {
+        $this->authorize('upsert', $event);
+
         if ($user->ability != 'seller') {
             
             return response()->json(['data' => "Only sellers can be added to events."], Response::HTTP_FORBIDDEN);
@@ -58,7 +63,7 @@ class EventUserController extends Controller
             ['event_id' => $event->id, 'user_id' => $user->id]
         );
 
-        return response()->json(['data' => "User {$user->name}'s added to event {$event->name}"], Response::HTTP_CREATED);
+        return response()->json(['data' => "User {$user->name} added to event {$event->name}"], Response::HTTP_CREATED);
     }
 
     /**
@@ -68,6 +73,8 @@ class EventUserController extends Controller
      */
     public function destroy(Event $event, User $user)
     {
+        $this->authorize('delete', $event);
+
         $event->users()->detach($user->id);
 
         return response()->json(['data' => "{$user->name} removed from event {$event->name}"], Response::HTTP_OK);
@@ -75,6 +82,8 @@ class EventUserController extends Controller
 
     public function transactions(Event $event, User $user)
     {
+        $this->authorize('viewTransactions', $event, $user);
+
         $transactions = Transaction::where('user_id', '=', $user->id)
             ->where('event_id', '=', $event->id)
             ->get();

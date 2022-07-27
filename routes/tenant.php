@@ -101,11 +101,13 @@ Route::prefix(
     Route::patch('bankaccounts/{bankAccount}', [BankAccountController::class, 'update'])->can('update', 'bankAccount');
     Route::delete('bankaccounts/{bankAccount}', [BankAccountController::class, 'destroy'])->can('delete', 'bankAccount');
 
-    Route::post('events/{event}/users', [EventUserController::class, 'seedSeller'])->can('seedSeller', EventUser::class);
-    Route::put('events/{event}/users/{user}', [EventUserController::class, 'upsert'])->can('upsert', [EventUser::class, 'event']);
-    Route::delete('events/{event}/users/{user}', [EventUserController::class, 'destroy'])->can('delete', [EventUser::class, 'event']); // Detach is within scope of manager.
+    // Authorization is handled in controller.
+    Route::post('events/{event}/users', [EventUserController::class, 'seedSeller']);
+    Route::put('events/{event}/users/{user}', [EventUserController::class, 'upsert']);
+    // Detach is within scope of manager.
+    Route::delete('events/{event}/users/{user}', [EventUserController::class, 'destroy']); 
     // This route is used to access the user transactions executed during an event.
-    Route::get('events/{event}/users/{user}/transactions', [EventUserController::class, 'transactions'])->can('viewTransactions', [EventUser::class, 'event', 'user']);
+    Route::get('events/{event}/users/{user}/transactions', [EventUserController::class, 'transactions']);
 
     Route::get('categories', [CategoryController::class, 'index'])->can('viewAny', Category::class);
     Route::post('events/{event}/categories', [CategoryController::class, 'store'])->can('create', [Category::class, 'event']);
@@ -121,15 +123,15 @@ Route::prefix(
     Route::patch('items/{item}', [ItemController::class, 'update'])->can('update', 'item');
     Route::delete('items/{item}', [ItemController::class, 'destroy'])->can('delete', 'item');
 
-
     // This route is used to access the item transactions.
     // Route::get('items/{item}/transactions', [ItemController::class, 'transactions'])->can('viewTransactions', 'item'));
 
     Route::get('transactions', [TransactionController::class, 'index'])->can('viewAny', Transaction::class);
-    Route::post('events/{event}/transactions', [TransactionController::class, 'store'])->can('create', [Transaction::class, 'event']); // This route also inserts the pivot table entries.
+    // This route also inserts the pivot table entries.
+    Route::post('events/{event}/transactions', [TransactionController::class, 'store'])->can('create', [Transaction::class, 'event']); 
     Route::get('transactions/{transaction}', [TransactionController::class, 'show'])->can('view', 'transaction');
      // This route is used to modify the status of a transaction.
-     Route::put('transactions/{transaction}', [TransactionController::class, 'toggleStatus'])->can('toggleStatus', 'transaction');
+    Route::put('transactions/{transaction}', [TransactionController::class, 'toggleStatus'])->can('toggleStatus', 'transaction');
     Route::delete('transactions/{transaction}', [TransactionController::class, 'destroy'])->can('delete', 'transaction');
     // This route is used to access the transaction items.
     Route::get('transactions/{transaction}/items', [TransactionController::class, 'items'])->can('viewItems', 'transaction');

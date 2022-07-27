@@ -40,7 +40,7 @@ class TenantDatabaseSeeder extends Seeder
 
         // Everything hereunder to be commented out in production.
         $bankAccount = BankAccount::factory()->createOne();
-        $manager = User::factory()->createOne(['ability' => 'manager']);
+        $manager = User::factory()->createOne(['email' => 'manager@demo.backend.test', 'ability' => 'manager']);
 
         // 1 manager and 1 seller per event
         $events = Event::factory(2)

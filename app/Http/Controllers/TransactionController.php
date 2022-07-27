@@ -54,10 +54,10 @@ class TransactionController extends Controller
         //     return $item;
         // });
 
-        $transaction = DB::transaction(function () use ($request, $validatedAttributes) {
+        $transaction = DB::transaction(function () use ($request, $event, $validatedAttributes) {
             $transaction = Transaction::create([
-                'user_id' => $request->user()->user_id,
-                'event_id' => $request->user()->event_id
+                'user_id' => $request->user()->id,
+                'event_id' => $event->id
             ]);
 
             foreach ($validatedAttributes as $line) {

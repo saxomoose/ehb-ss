@@ -124,7 +124,8 @@ class UserController extends Controller
 
     public function toggleIsActive(User $user)
     {
-        if ($user->status == 1) {
+        // Also deactivate user who did not activate account.
+        if ($user->status == 1 || $user->status == 0) {
             $user->status = -1;
             $user->pin_code = null;
             $user->pin_code_timestamp = null;

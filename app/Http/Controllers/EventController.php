@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\EventResource;
+use App\Http\Resources\ItemResource;
 use App\Http\Resources\TransactionResource;
 use App\Http\Resources\UserResource;
 use App\Models\Event;
@@ -140,9 +141,19 @@ class EventController extends Controller
         return response()->noContent();
     }
 
+    public function users(Event $event)
+    {
+        return UserResource::collection($event->users);
+    }
+
     public function categories(Event $event)
     {
         return CategoryResource::collection($event->categories);
+    }
+
+    public function items(Event $event)
+    {
+        return ItemResource::collection($event->items);
     }
 
     public function transactions(Event $event)
@@ -150,8 +161,7 @@ class EventController extends Controller
         return TransactionResource::collection($event->transactions);
     }
 
-    public function users(Event $event)
-    {
-        return UserResource::collection($event->users);
-    }
+
+
+
 }

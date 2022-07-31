@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\EventResource;
 use App\Http\Resources\UserResource;
+use App\Models\Event;
 use App\Models\User;
 use App\Notifications\PINCodeNotification;
 use Illuminate\Auth\Events\Registered;
@@ -144,7 +145,13 @@ class UserController extends Controller
     // Since Eloquent provides "dynamic relationship properties", relationship methods are accessed as if they were defined as properties on the model.
     public function events(User $user)
     {
-        return EventResource::collection($user->events);
+        if ($user->ability == 'admin') {
+            return EventResource::collection(Event::all());
+        } else if($user->ability == 'manager') {
+            return EventResource::collection($user->managedEvents());
+        } else {
+            return EventResource::collection($user->events);
+        }
     }
 
     // TODO.

@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\TenantController;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 

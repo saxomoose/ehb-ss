@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Token;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -49,8 +47,9 @@ class LoginController extends Controller
         // User is active. The user token for the user is created.
         else if ($user->status == 1 && $user->tokens->isEmpty()) {
             $token = $user->createToken($validatedAttributes['device_name'], []);
-
-            return response()->json(['data' => $token->plainTextToken], Response::HTTP_OK);
+            $data = ['user_id' => $user->id, 'token' => $token->plainTextToken];
+            
+            return response()->json(['data' => $data], Response::HTTP_OK);
         } else {
             return response()->json(['error' => 'The user token is already set.'], Response::HTTP_FORBIDDEN);
         }

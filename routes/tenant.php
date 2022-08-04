@@ -15,7 +15,6 @@ use App\Http\Controllers\UserController;
 use App\Models\BankAccount;
 use App\Models\Category;
 use App\Models\Event;
-use App\Models\EventUser;
 use App\Models\Item;
 use App\Models\Transaction;
 use App\Models\User;

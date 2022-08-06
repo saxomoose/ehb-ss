@@ -14,7 +14,7 @@ Below commands should be run from root folder.
 
 Install dependencies: `composer install`
 
-Boot containers: `sail up -d --build`
+Boot containers: `sail up -d [--build]`
 
 Grant all privileges to database user dba:
 
@@ -42,9 +42,9 @@ sail artisan tenants:seed
 
 ## Get started
 
-The application implements a multi-tenancy architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant created on seed. 
+The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant created on seed. 
 
-For demonstration purposes, the central domain is `backend.test` and the demo tenant domain is `domain.backend.test`
+For demonstration purposes, the central domain is `backend.test` and the demo tenant domain is `demo.backend.test`
 
 
 

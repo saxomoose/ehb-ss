@@ -40,7 +40,7 @@ sail artisan tenants:seed
 | mailhog | http://[docker host ip]:8025 |
 | api | http://[docker host ip] |
 
-## Use
+# Use
 
 The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant created on seed. 
 

@@ -42,6 +42,6 @@ sail artisan tenants:seed
 
 # Use
 
-The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant created on seed. 
+The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant back-end. 
 
 For demonstration purposes, the central domain is `backend.test` and the demo tenant domain is `demo.backend.test`

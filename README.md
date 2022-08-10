@@ -1,6 +1,6 @@
 # Requirements
 
-- php v8.1
+- php v8.0 or higher
 - [composer](https://getcomposer.org/)
 - [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/install/)
 
@@ -12,9 +12,11 @@ Add `.env` file to root folder.
 
 Below commands should be run from root folder.
 
-Install dependencies: `composer install`
+Install dependencies: `composer update`
 
-Boot containers: `sail up -d [--build]`
+Rebuild api image: `sail build`
+
+Boot containers: `sail up -d`
 
 Grant all privileges to database user dba:
 

@@ -40,7 +40,7 @@ class EventPolicy
     {
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 
     /**
@@ -65,7 +65,7 @@ class EventPolicy
     {
         return $user->isManager($event->id)
         ? Response::allow()
-        : Response::deny('The user is not the manager of this event.');
+        : Response::deny('Only the manager of this event can perform this action.');
     }
 
     /**
@@ -104,24 +104,31 @@ class EventPolicy
         //
     }
 
+    public function viewUsers(User $user, Event $event)
+    {
+        return $user->isManager($event->id)
+            ? Response::allow()
+            : Response::deny('Only the manager of this event can perform this action.');
+    }
+
     public function viewCategories(User $user, Event $event)
     {
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
+    }
+
+    public function viewItems(User $user, Event $event)
+    {
+        return $user->isManager($event->id)
+            ? Response::allow()
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 
     public function viewTransactions(User $user, Event $event)
     {
         return $user->isManager($event->id)
             ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
-    }
-
-    public function viewUsers(User $user, Event $event)
-    {
-        return $user->isManager($event->id)
-            ? Response::allow()
-            : Response::deny('The user is not the manager of this event.');
+            : Response::deny('Only the manager of this event can perform this action.');
     }
 }

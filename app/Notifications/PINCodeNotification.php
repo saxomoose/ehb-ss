@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -49,7 +48,7 @@ class PINCodeNotification extends Notification
                         'pinCode' => $this->pinCode,
                         'userId' => $this->userId
                     ])
-                    ->subject('Hexclan - Activate your account');
+                    ->subject('backend - Activate your account');
     }
 
     /**

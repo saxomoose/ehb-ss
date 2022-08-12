@@ -5,16 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
-use Laravel\Sanctum\NewAccessToken;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-
-    // Required because primary key is uuid.
-    public $incrementing = false;
 
     /**
      * The attributes that aren't mass assignable.
@@ -29,7 +24,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        'id' => 'string',
         'pin_code_timestamp' => 'datetime'
     ];
 

@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\EventResource;
 use App\Http\Resources\UserResource;
+use App\Models\Event;
 use App\Models\User;
 use App\Notifications\PINCodeNotification;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -113,7 +112,6 @@ class UserController extends Controller
         $validatedAttributes = $rawValidatedAttributes['data'];
 
         $user = User::create([
-            'id' => (string) Str::uuid(),
             'email' => $validatedAttributes['email'],
             'ability' => 'manager'
         ]);
@@ -125,7 +123,8 @@ class UserController extends Controller
 
     public function toggleIsActive(User $user)
     {
-        if ($user->status == 1) {
+        // Also deactivate user who did not activate account.
+        if ($user->status == 1 || $user->status == 0) {
             $user->status = -1;
             $user->pin_code = null;
             $user->pin_code_timestamp = null;
@@ -144,7 +143,13 @@ class UserController extends Controller
     // Since Eloquent provides "dynamic relationship properties", relationship methods are accessed as if they were defined as properties on the model.
     public function events(User $user)
     {
-        return EventResource::collection($user->events);
+        if ($user->ability == 'admin') {
+            return EventResource::collection(Event::all());
+        } else if($user->ability == 'manager') {
+            return EventResource::collection($user->managedEvents());
+        } else {
+            return EventResource::collection($user->events);
+        }
     }
 
     // TODO.

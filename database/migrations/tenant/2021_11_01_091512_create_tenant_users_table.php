@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class CreateTenantUsersTable extends Migration
@@ -16,7 +15,7 @@ class CreateTenantUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary();
+            $table->id();
             $table->string('name')->default('placeholder');
             $table->string('email')->unique();
             //$table->timestamp('email_verified_at')->nullable();

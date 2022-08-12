@@ -3,7 +3,6 @@
 namespace App\Observers;
 
 use App\Models\Event;
-use App\Models\User;
 
 class EventObserver
 {

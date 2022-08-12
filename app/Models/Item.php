@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\PriceCast;
-use App\Casts\VatRateCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,7 +16,7 @@ class Item extends Model
         'price' => PriceCast::class
     ];
 
-    protected $appends = ['event_id'];
+    // protected $appends = ['event_id'];
 
     // The category to which the item belongs.
     public function category()

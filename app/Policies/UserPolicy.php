@@ -33,7 +33,7 @@ class UserPolicy
         if ($user->ability != 'admin') {
             return $user->id == $model->id
                 ? Response::allow()
-                : Response::deny('The user is only authorised to access his/her own record(s)');
+                : Response::deny('The user is only authorized to access his/her own record(s)');
         } else {
             return $user->ability == 'admin';
         }
@@ -67,7 +67,7 @@ class UserPolicy
         else if ($user->ability != 'admin') {
             return $user->id == $model->id
                 ? Response::allow()
-                : Response::deny('The user is only authorised to access his/her own record(s)');
+                : Response::deny('The user is only authorized to access his/her own record(s)');
         } else {
             return $user->ability == 'admin';
         }
@@ -130,7 +130,7 @@ class UserPolicy
         if ($user->ability != 'admin') {
             return $user->id == $model->id
                 ? Response::allow()
-                : Response::deny('The user is only authorised to access his/her own record(s)');
+                : Response::deny('The user is only authorized to access his/her own record(s)');
         } else {
             return $user->ability == 'admin';
         }

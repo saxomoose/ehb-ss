@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Notifications\PINCodeNotification;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
@@ -52,7 +51,7 @@ class PINCodeController extends Controller
             } else {
                 $user->status = 1;
                 $user->saveQuietly();
-                $message = ['message' => 'Your account is now active. You can now log in from the app.'];
+                $message = ['message' => 'Your account is now active. You can now log in the app.'];
                 
                 return redirect()->action([PINCodeController::class, 'confirm'], $message);
             }

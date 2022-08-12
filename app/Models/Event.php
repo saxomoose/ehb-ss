@@ -9,9 +9,6 @@ class Event extends Model
 {
     use HasFactory;
 
-    // Required because primary key is uuid.
-    //public $incrementing = false;
-
     protected $guarded = [];
 
     // The manager of the event.
@@ -26,15 +23,11 @@ class Event extends Model
         return $this->belongsTo(BankAccount::class);
     }
 
-    // The categories that belong to the event.
-    public function categories()
+    // The sellers that belong to the event.
+    public function users()
     {
-        return $this->hasMany(Category::class);
-    }
-
-    public function items()
-    {
-        return $this->hasManyThrough(Item::class, Category::class);
+        return $this->belongsToMany(User::class)
+            ->using(EventUser::class);
     }
 
     /**
@@ -46,16 +39,20 @@ class Event extends Model
         return $this->hasMany(EventUser::class);
     }
 
+    // The categories that belong to the event.
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function items()
+    {
+        return $this->hasManyThrough(Item::class, Category::class);
+    }
+
     // The transactions that belong to the event.
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
-    }
-
-    // The sellers that belong to the event.
-    public function users()
-    {
-        return $this->belongsToMany(User::class)
-            ->using(EventUser::class);
     }
 }

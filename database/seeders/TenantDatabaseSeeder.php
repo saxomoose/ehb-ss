@@ -12,7 +12,6 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class TenantDatabaseSeeder extends Seeder
 {
@@ -34,14 +33,13 @@ class TenantDatabaseSeeder extends Seeder
             ->table('users')
             ->first();
         User::factory()->createOne([
-            'id' => (string) Str::uuid(),
             'email' => $adminEmail,
             'ability' => 'admin',
         ]);
 
         // Everything hereunder to be commented out in production.
         $bankAccount = BankAccount::factory()->createOne();
-        $manager = User::factory()->createOne(['ability' => 'manager']);
+        $manager = User::factory()->createOne(['email' => 'manager@demo.backend.test', 'ability' => 'manager']);
 
         // 1 manager and 1 seller per event
         $events = Event::factory(2)

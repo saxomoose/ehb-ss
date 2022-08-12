@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,8 +18,7 @@ class DatabaseSeeder extends Seeder
         $dispatcher = User::getEventDispatcher();
         User::unsetEventDispatcher();
         $user = User::create([
-            'id' => (string) Str::uuid(),
-            'email' => 'mathieu.developer@protonmail.com',
+            'email' => 'mathieu.tulpinck@student.ehb.be',
             'ability' => 'admin'
         ]);
 

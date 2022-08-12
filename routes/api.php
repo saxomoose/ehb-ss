@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\TenantController;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware([
     'api',
     'auth:sanctum'
-    // Authorisation is handled in TenantController's constructor.
+    // Authorization is handled in TenantController's constructor.
 ])->group(function () {
     // Update action is not yet implemented (should be designed carefully).
     Route::apiResource('tenants', TenantController::class)->except('update');

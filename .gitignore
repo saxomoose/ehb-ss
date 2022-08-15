@@ -9,6 +9,7 @@ _ide_helper.php
 /.devcontainer
 /.idea
 /.vscode
+/app.yml
 /docker/7.4
 /docker/8.0
 /vendor

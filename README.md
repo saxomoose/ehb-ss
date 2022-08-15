@@ -15,12 +15,12 @@ Below commands should be run from root folder.
 Install php extensions:
 ```bash
 sudo apt install \
-php7.4-bcmath \
-php7.4-common \
-php7.4-curl \
-php7.4-json \
-php7.4-mbstring \
-php7.4-xml
+    php7.4-bcmath \
+    php7.4-common \
+    php7.4-curl \
+    php7.4-json \
+    php7.4-mbstring \
+    php7.4-xml
 ```
 
 Install dependencies: `composer update`.

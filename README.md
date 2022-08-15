@@ -1,22 +1,35 @@
 # Requirements
 
-- php v8.0 or higher
+- php v7.4 or higher
 - [composer](https://getcomposer.org/)
 - [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/install/)
 
 # Installation
 
-Clone repo: `git clone <url> backend`
+Clone repo: `git clone <url> backend`.
 
 Add `.env` file to root folder.
 
 Below commands should be run from root folder.
 
-Install dependencies: `composer update`
+Install php extensions:
+```bash
+sudo apt install \
+php7.4-bcmath \
+php7.4-common \
+php7.4-curl \
+php7.4-json \
+php7.4-mbstring \
+php7.4-xml
+```
 
-Rebuild api image: `sail build`
+Install dependencies: `composer update`.
 
-Boot containers: `sail up -d`
+Build api image: `sail build [--no-cache]`.
+
+Boot containers: `sail up -d`.
+
+Upgrade dependencies within container: `sail composer update`.
 
 Grant all privileges to database user dba:
 
@@ -46,6 +59,6 @@ sail artisan tenants:seed
 
 The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant back-end. 
 
-For demonstration purposes, the central domain is `backend.test` and the demo tenant domain is `demo.backend.test`
+For demonstration purposes, the central domain is `backend.test` and the demo tenant domain is `demo.backend.test`.
 
-To shut the services down: `sail down`
+To shut the services down: `sail down`.

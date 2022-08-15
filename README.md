@@ -10,7 +10,7 @@ Clone repo: `git clone <url> backend`.
 
 Add `.env` file to root folder.
 
-Below commands should be run from root folder.
+Below commands should be run from top folder.
 
 Install php extensions:
 ```bash
@@ -25,7 +25,7 @@ sudo apt install \
 
 Install dependencies: `composer update`.
 
-Build api image: `sail build [--no-cache]`.
+Build API image: `sail build [--no-cache]`.
 
 Boot containers: `sail up -d`.
 
@@ -57,7 +57,7 @@ sail artisan tenants:seed
 
 # Use
 
-The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant back-end. 
+The application implements a multi-tenanted architecture. The [frontend](https://github.com/mathieu-tulpinck/ehb-ad) connects to the tenant back-end API. 
 
 For demonstration purposes, the central domain is `backend.test` and the demo tenant domain is `demo.backend.test`.
 

@@ -1,6 +1,6 @@
 # Requirements
 
-- php version 7.4 or 8.1
+- php version on docker host: 7.4 or 8.1
 - [composer](https://getcomposer.org/)
 - [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/install/)
 

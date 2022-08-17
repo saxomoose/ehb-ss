@@ -1,8 +1,10 @@
-# Requirements
+# Host requirements
 
-- php version on docker host: 7.4 or 8.1
-- [composer](https://getcomposer.org/)
-- [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/install/)
+php version on docker host: 7 or 8.
+
+[composer](https://getcomposer.org/). Required php extensions can be checked by running `composer check-platform-reqs`. Install missing extensions if any.
+
+[docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/install/).
 
 # Installation
 
@@ -11,17 +13,6 @@ Clone repo: `git clone <url> backend`.
 Add `.env` file to root folder.
 
 Below commands should be run from top folder.
-
-Install php extensions:
-```bash
-sudo apt install \
-    php7.4-bcmath \
-    php7.4-common \
-    php7.4-curl \
-    php7.4-json \
-    php7.4-mbstring \
-    php7.4-xml
-```
 
 Install dependencies: `composer update`.
 

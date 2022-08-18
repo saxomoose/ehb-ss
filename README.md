@@ -24,8 +24,6 @@ Build API image: `sail build [--no-cache]`.
 
 Boot containers: `sail up -d`.
 
-Upgrade dependencies within container: `sail composer update`.
-
 Grant all privileges to database user dba:
 
 ```bash

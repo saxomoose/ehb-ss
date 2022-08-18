@@ -11,3 +11,4 @@ _ide_helper.php
 app.yml
 docker-compose.yml
 html-coverage
+README.md

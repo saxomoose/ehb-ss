@@ -1,9 +1,5 @@
 # Host requirements
 
-php version on docker host: 7 or 8.
-
-[composer](https://getcomposer.org/). Required php extensions can be checked by running `composer check-platform-reqs`. Install missing extensions if any.
-
 [docker](https://www.docker.com/) and [docker compose](https://docs.docker.com/compose/install/).
 
 # Installation
@@ -12,15 +8,21 @@ Clone repo: `git clone <url> backend`.
 
 Add `.env` file to root folder.
 
-Below commands should be run from top folder.
+Below commands should be run from root folder.
 
-Install dependencies: `composer update`.
+Use a bootstrapping container to install the application's dependencies:
+```bash
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v $(pwd):/var/www/html \
+    -w /var/www/html \
+    laravelsail/php81-composer:latest \
+    composer install --ignore-platform-reqs
+```
 
 Build API image: `sail build [--no-cache]`.
 
 Boot containers: `sail up -d`.
-
-Upgrade dependencies within container: `sail composer update`.
 
 Grant all privileges to database user dba:
 
@@ -31,7 +33,7 @@ GRANT ALL PRIVILEGES ON *.* TO dba@'%';
 FLUSH PRIVILEGES;
 ```
 
-Run all migrations against central and tenant databases. Seed data:
+Run migrations against central and tenant databases. Seed data:
 
 ```bash
 sail artisan migrate:fresh --seed

@@ -33,7 +33,7 @@ GRANT ALL PRIVILEGES ON *.* TO dba@'%';
 FLUSH PRIVILEGES;
 ```
 
-Run all migrations against central and tenant databases. Seed data:
+Run migrations against central and tenant databases. Seed data:
 
 ```bash
 sail artisan migrate:fresh --seed

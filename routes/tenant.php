@@ -35,19 +35,26 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-// Universal API routes - no auth - throttling.
+// Universal web routes - no auth.
+Route::middleware([
+    'web',
+    'universal',
+    InitializeTenancyByDomain::class,
+])->group(function () {
+    Route::post('pincode/{user}', [PINCodeController::class, 'activate'])->name('pin.activate');
+    Route::put('pincode/{user}', [PINCodeController::class, 'reset'])->name('pin.reset');
+});
+
+// Universal API routes - no auth.
 Route::prefix(
     'api'
 )->middleware([
+    'api',
     'universal',
     InitializeTenancyByDomain::class,
-    'api',
-    // 'throttle:open',
+    'throttle:open',
 ])->group(function () {
     Route::post('register', RegisterController::class);
-    Route::post('pincode/{user}', [PINCodeController::class, 'activate'])->name('pin.activate');
-    Route::get('pincode' , [PINCodeController::class, 'confirm'])->name('pin.confirm');
-    Route::put('pincode/{user}', [PINCodeController::class, 'reset'])->name('pin.reset');
     Route::post('login', LoginController::class);
 });
 
@@ -55,9 +62,9 @@ Route::prefix(
 Route::prefix(
     'api'
 )->middleware([
+    'api',
     'universal',
     InitializeTenancyByDomain::class,
-    'api',
     'auth:sanctum',
 ])->group(function () {
     //Route::get('/token/refresh', [TokenController::class, 'refresh']);
@@ -71,9 +78,9 @@ Route::prefix(
 Route::prefix(
     'api'
 )->middleware([
+    'api',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
-    'api',
     'auth:sanctum'
 ])->group(function () {
     Route::post('users', [UserController::class, 'seedManager'])->can('seedManager', User::class);

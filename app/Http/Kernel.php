@@ -43,10 +43,8 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            // Deactivated due to reset pin route coming from browser.
-            // \App\Http\Middleware\AcceptableTypeIsJSON::class,
-            // Deactivated due to reset pin route coming from browser.
-            // \App\Http\Middleware\SecureResponseHeaders::class
+            \App\Http\Middleware\AcceptableTypeIsJSON::class,
+            \App\Http\Middleware\SecureResponseHeaders::class
         ],
 
         'universal' => [],

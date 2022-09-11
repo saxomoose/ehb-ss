@@ -40,6 +40,7 @@ Route::middleware([
     'web',
     'universal',
     InitializeTenancyByDomain::class,
+    'throttle:open'
 ])->group(function () {
     Route::post('pincode/{user}', [PINCodeController::class, 'activate'])->name('pin.activate');
     Route::put('pincode/{user}', [PINCodeController::class, 'reset'])->name('pin.reset');
